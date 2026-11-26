@@ -1,0 +1,12 @@
+{
+ "id": "state-butterfly",
+ "fn": "stateButterfly",
+ "height": 460,
+ "title_en": "State butterfly",
+ "use_en": "Use it when the \"gone\" mass matters as much as the active one: a 100% stacked area over time mirrored around zero — states that mean left or paused grow upwards, active screens sit below the line, the y axis runs 0–100 both ways. Time marks (log or linear) are passed in as labels. Click a legend item to toggle that state; hover for the exact shares at a mark.",
+ "title_ru": "Бабочка состояний",
+ "use_ru": "Когда «ушедшая» масса важна не меньше активной: 100%-стек по времени, зеркальный относительно нуля — состояния «вышел» и «пауза» растут вверх, активные экраны лежат под линией, ось y идёт 0–100 в обе стороны. Отметки времени (лог или линейные) задаются подписями. Клик по элементу легенды выключает состояние; наведение даёт точные доли в отметке.",
+ "init": "ChartKit.stateButterfly('c-state-butterfly', DEMO.stateButterfly());",
+ "snippet": "ChartKit.stateButterfly('c-state-butterfly', {\n  labels: ['0', '1 s', '2 s', ..., '2 h'], states: ['home', 'search form', ..., 'paused', 'left without booking', 'left with booking'],\n  up: ['paused', 'left without booking', 'left with booking'],                 // drawn above zero; the rest below\n  data: { home: [100, 99, ...], 'left with booking': [0, 0, ...], ... },         // % of ALL sessions per mark\n  colors: { home: '#334155', ... }, yName: '← active on the site        left or paused →'\n});",
+ "skill": "ChartKit.stateButterfly(el, {\n  labels: ['0', '1 s', '10 s', '1 min', ...], states: [...all states],\n  up: ['paused', 'left'], data: { [state]: [% per mark] }, colors: { [state]: color }\n});"
+}

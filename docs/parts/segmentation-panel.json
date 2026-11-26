@@ -1,0 +1,12 @@
+{
+ "id": "segmentation-panel",
+ "fn": "segmentationPanel",
+ "height": null,
+ "title_en": "Segmentation panel",
+ "use_en": "Use it as the first table after a segmentation: one row per segment with its name, a share-of-base bar, the outcome bar with its value and a sparkline of the state timeline — a tiny 100% stacked column per time mark, colour = state. Rows are sorted by the outcome, the overall row stays on top, so the eye reads \"who is big, who converts, what they do\" in one pass. Hover a sparkline column for the share of a state at that mark. Plain HTML, sizes itself; needs lib/parts/segmentation-panel.css.",
+ "title_ru": "Панель сегментации",
+ "use_ru": "Первая таблица после сегментации: строка на сегмент — имя, полоска доли базы, полоска результата со значением и спарклайн таймлайна состояний: крошечный 100%-столбик на отметку времени, цвет — состояние. Строки отсортированы по результату, общая строка сверху — глаз за один проход читает «кто большой, кто конвертируется, что они делают». Наведение на столбик спарклайна показывает долю состояния. Чистый HTML, высоту задаёт сам; нужен lib/parts/segmentation-panel.css.",
+ "init": "ChartKit.segmentationPanel('c-segmentation-panel', DEMO.segmentationPanel());",
+ "snippet": "ChartKit.segmentationPanel('c-segmentation-panel', {\n  rows: [{ name: 'Searches by dates first', share: 25, value: 39, color: '#2563EB' }, ..., { name: 'All visits', share: 100, value: 27, overall: true }],\n  valueLabel: 'booking rate', shareLabel: 'share of visits',\n  mini: { marks: [0, 10, ..., 120], states: ['home', 'search form', ...], colors: { home: '#0F172A', ... },\n          data: { 'Searches by dates first': { home: [100, 38, ...], 'search form': [0, 54, ...] }, ... }, unit: 's', label: 'screen at' }   // optional sparkline\n});",
+ "skill": "ChartKit.segmentationPanel(el, {\n  rows: [{ name, share, value, color?, overall?: true }],\n  valueLabel: 'booking rate', shareLabel: 'share of visits',\n  mini: { marks, states, colors, data: { [row]: { [state]: [% per mark] } } }   // optional\n});"
+}

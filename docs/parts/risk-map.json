@@ -1,0 +1,12 @@
+{
+ "id": "risk-map",
+ "fn": "riskMap",
+ "height": 520,
+ "title_en": "Risk map",
+ "use_en": "Use it to rank the things that go wrong on the way to an outcome: x = how common the event is (share of sessions, log scale), y = how often people leave without the outcome right after it. Bubble area = sessions lost that way, colour = stage, a hollow bubble = too few cases to trust, the whisker = 95% Wilson interval, the dashed line = the background rate after an ordinary action. Italic captions name the quadrants; the shaded zone is \"common and at least twice the background\". Hover a bubble for the counts.",
+ "title_ru": "Карта рисков",
+ "use_ru": "Ранжирует то, что ломается по дороге к результату: x — как часто событие случается (доля заходов, логарифмическая шкала), y — как часто после него уходят без результата. Площадь кружка — потерянные заходы, цвет — шаг пути, полый кружок — мало случаев, усы — 95% интервал Уилсона, пунктир — фон после обычного действия. Курсивные подписи называют квадранты; заливка — «часто и хотя бы вдвое выше фона». Наведение показывает счётчики.",
+ "init": "ChartKit.riskMap('c-risk-map', DEMO.riskMap());",
+ "snippet": "ChartKit.riskMap('c-risk-map', {\n  events: [{ name: 'no rooms for these dates', note: 'sold out', category: 'search', x: 6, n: 3600, k: 1440 }, ...],   // x = % of sessions, k = lost of n\n  background: 9.5, backgroundLabel: 'background, ordinary action', minN: 100,                                   // hollow bubble below minN\n  colors: { start: '#334155', search: '#2563EB', ... }, labelPositions: { 'page crash': 'right' },\n  quadrants: { topLeft: 'rare but deadly', topRight: 'mass killers', bottomRight: 'loud but harmless', bottomLeft: 'almost harmless' },\n  zone: { x: 5, factor: 2, label: 'common and deadly' }, xName: 'share of sessions (log) →', yName: '↑ lost within a minute, %'\n});",
+ "skill": "ChartKit.riskMap(el, {\n  events: [{ name, note?, category?, x: % of sessions, n: occurrences, k: lost }],\n  background: 9.5, minN: 100, colors: { [category]: color },\n  quadrants: { topLeft: 'rare but deadly', topRight: 'mass killers' },\n  xName: 'share of sessions (log) →', yName: '↑ lost within a minute, %'\n});"
+}

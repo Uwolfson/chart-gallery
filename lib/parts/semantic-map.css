@@ -1,0 +1,13 @@
+/* chart-gallery part — semantic map (canvas). Prefix ck-semantic-map-. Chips reuse .ck-chips / .ck-chip from lib/charts.css. */
+.ck-semantic-map { width: 100%; }
+.ck-semantic-map-plot { position: relative; border: 1px solid var(--ck-line); border-radius: 10px; overflow: hidden; background: var(--ck-bg); }
+.ck-semantic-map-plot--active { border-color: var(--ck-muted); }
+.ck-semantic-map-plot canvas { display: block; width: 100%; touch-action: none; cursor: default; }
+.ck-semantic-map-plot canvas.ck-semantic-map-drag { cursor: grabbing; }
+.ck-semantic-map-tools { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.ck-semantic-map-tools button { font: inherit; font-size: 1rem; line-height: 1; width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--ck-line); background: var(--ck-bg); color: var(--ck-text); cursor: pointer; }
+.ck-semantic-map-tools button:hover { border-color: var(--ck-muted); }
+.ck-semantic-map-level { position: absolute; left: 10px; bottom: 8px; font-size: .78rem; color: var(--ck-muted); pointer-events: none; }
+.ck-semantic-map-hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); font-size: .8rem; padding: 4px 10px; border-radius: 999px; background: var(--ck-text); color: var(--ck-bg); opacity: 0; transition: opacity .2s; pointer-events: none; }
+.ck-semantic-map-hint--on { opacity: .92; }
+.ck-semantic-map-tip { position: absolute; display: none; pointer-events: none; max-width: 300px; background: var(--ck-text); color: var(--ck-bg); font-size: .8rem; line-height: 1.4; padding: 6px 9px; border-radius: 6px; z-index: 3; }

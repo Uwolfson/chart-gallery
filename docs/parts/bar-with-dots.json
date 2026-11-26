@@ -1,0 +1,8 @@
+{ "id": "bar-with-dots", "fn": "barWithDots", "height": 520,
+  "title_en": "Bar with dots",
+  "use_en": "Use it when one number per item has to be shown together with its stability: the bar is the effect on the full base (blue raises the outcome, orange lowers it; one colour when the measure is unsigned), the dots are the same measure in each wave, light to dark. With `ci: true` a whisker shows the ± confidence interval across the bar; it is always in the tooltip. Items are sorted by absolute effect, largest on top.",
+  "title_ru": "Столбики с точками",
+  "use_ru": "Когда одно число на пункт надо показать вместе с его устойчивостью: столбик — эффект на полной базе (синий поднимает исход, оранжевый опускает; один цвет, если мера без знака), точки — та же мера по волнам, от светлой к тёмной. С ci: true поперёк столбика рисуется ус доверительного интервала; в подсказке он есть всегда. Пункты отсортированы по модулю эффекта, самый большой сверху.",
+  "init": "ChartKit.barWithDots('c-bar-with-dots', DEMO.barWithDots());",
+  "snippet": "ChartKit.barWithDots('c-bar-with-dots', {\n  items: [{ name: 'Room cleanliness', value: 8.7, ci: 1.18, waves: [8.5, 8.2, 8.5] }, ...],   // value on the full base, one entry per wave\n  waveNames: ['wave 1', 'wave 2', 'wave 3'], unit: ' pp', signed: true, ci: true, baseLabel: 'all waves'\n});\n// an unsigned score from an older method: { ..., signed: false, reference: '#7C3AED', unit: '%' }",
+  "skill": "ChartKit.barWithDots(el, {\n  items: [{ name, value, ci?, waves: [v1, v2, v3] }, ...],\n  waveNames: ['wave 1', 'wave 2', 'wave 3'], unit: ' pp',\n  signed: true, ci: true,            // signed: false + reference: color for a one-colour score\n});" }

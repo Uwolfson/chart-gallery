@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Галерея графиков — отзыв</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js" onerror="var s=document.createElement('script');s.src='dist/echarts.min.js';document.head.appendChild(s)"></script>
+<link rel="stylesheet" href="lib/charts.css">
+<style>
+* { box-sizing: border-box; } html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ck-bg); color: var(--ck-text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; padding-bottom: 90px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+header { padding: 36px 0 10px; } h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.1; margin: 0 0 10px; font-weight: 800; text-wrap: balance; }
+.sub { color: var(--ck-muted); max-width: 76ch; margin: 0 0 6px; }
+.who { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 14px 0 4px; font-size: .92rem; }
+.who input { font: inherit; padding: 6px 10px; border: 1px solid var(--ck-line); border-radius: 8px; background: var(--ck-bg); color: var(--ck-text); min-width: 220px; }
+nav { position: sticky; top: 0; z-index: 5; background: var(--ck-bg); border-bottom: 1px solid var(--ck-line); }
+nav .wrap { display: flex; flex-wrap: wrap; gap: 4px 16px; padding-top: 10px; padding-bottom: 10px; }
+nav a { color: var(--ck-muted); text-decoration: none; font-size: .86rem; font-weight: 500; white-space: nowrap; } nav a:hover { color: var(--ck-accent); }
+nav a.done::before { content: "✓ "; color: #059669; }
+section { padding: 38px 0 26px; border-top: 1px solid var(--ck-line); scroll-margin-top: 50px; }
+h2 { font-size: 1.35rem; margin: 0 0 4px; font-weight: 800; } .fn { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--ck-accent); font-size: .9rem; }
+.use { color: var(--ck-muted); max-width: 80ch; margin: 6px 0 14px; }
+.use b { color: var(--ck-text); }
+.chart { width: 100%; }
+pre { background: var(--ck-surface); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: .8rem; line-height: 1.45; margin: 14px 0 0; }
+details summary { cursor: pointer; color: var(--ck-muted); font-size: .86rem; margin-top: 12px; }
+.fb { margin-top: 18px; padding: 14px 16px; border: 1px solid var(--ck-line); border-radius: 12px; background: var(--ck-surface); }
+.fb__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.fb__row span { font-size: .9rem; color: var(--ck-muted); margin-right: 4px; }
+.fb button { font: inherit; font-size: .9rem; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--ck-line); background: var(--ck-bg); color: var(--ck-text); cursor: pointer; }
+.fb button:hover { border-color: var(--ck-muted); }
+.fb button.on[data-v="like"] { background: #059669; border-color: #059669; color: #fff; }
+.fb button.on[data-v="dislike"] { background: #DC2626; border-color: #DC2626; color: #fff; }
+.fb button.on[data-v="rework"] { background: #F97316; border-color: #F97316; color: #fff; }
+.fb textarea { display: none; width: 100%; margin-top: 10px; font: inherit; font-size: .92rem; padding: 8px 10px; border: 1px solid var(--ck-line); border-radius: 8px; background: var(--ck-bg); color: var(--ck-text); min-height: 72px; resize: vertical; }
+.fb textarea.show { display: block; }
+.fb__hint { font-size: .8rem; color: var(--ck-muted); margin: 8px 0 0; }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--ck-bg); border-top: 1px solid var(--ck-line); box-shadow: 0 -4px 16px rgba(0,0,0,.06); }
+.bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding-top: 10px; padding-bottom: 10px; }
+.bar .n { font-weight: 700; margin-right: auto; }
+.bar button, .bar a.btn { font: inherit; font-size: .88rem; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--ck-line); background: var(--ck-bg); color: var(--ck-text); cursor: pointer; text-decoration: none; }
+.bar button.primary { background: var(--ck-text); color: var(--ck-bg); border-color: var(--ck-text); }
+.bar button:hover, .bar a.btn:hover { border-color: var(--ck-muted); }
+.toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: var(--ck-text); color: var(--ck-bg); padding: 8px 14px; border-radius: 8px; font-size: .88rem; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 7; }
+.toast.show { opacity: 1; }
+footer { border-top: 1px solid var(--ck-line); padding: 22px 0 60px; color: var(--ck-muted); font-size: .85rem; }
+</style></head><body>
+<header><div class="wrap">
+  <h1>Галерея графиков — отзыв</h1>
+  <p class="sub">Двадцать шесть типов графиков для отчётов по опросам и поведенческим данным: что двигает показатель и какие атрибуты важны, как делятся сегменты по правилам, кто что делает во времени, куда перетекают люди, где теряются заходы. Все графики нарисованы одной маленькой библиотекой поверх Apache ECharts, без сборки.</p>
+  <p class="sub">Под каждым графиком — три кнопки: <b>Нравится</b>, <b>Не нравится</b>, <b>Доработать</b>. У «Доработать» открывается поле для текста; к любой оценке можно добавить комментарий. Оценки сохраняются в браузере; внизу страницы — кнопка, которая собирает всё в один текст: скопируйте его в чат или отправьте как issue на GitHub.</p>
+  <p class="sub" style="font-size:.88rem">Все цифры на странице — синтетические данные в трёх выдуманных сюжетах: сайт бронирования поездок, опрос гостей отелей и приложение для изучения языков.</p>
+  <div class="who"><label for="who">Кто смотрит:</label><input id="who" placeholder="имя"></div>
+</div></header>
+<nav><div class="wrap">
+  <a href="#timeline" data-nav="timeline">Таймлайн состояний</a><a href="#stack" data-nav="stack">Стопка состояний</a><a href="#sequence" data-nav="sequence">Полоски заходов</a><a href="#tree" data-nav="tree">Дерево сегментов</a><a href="#drivers" data-nav="drivers">Драйверы</a><a href="#grouped" data-nav="grouped">Пары столбиков</a>
+  <a href="#flow" data-nav="flow">Поток</a><a href="#map" data-nav="map">Карта сегментов</a><a href="#ladder" data-nav="ladder">Лесенка</a><a href="#heat" data-nav="heat">Тепловая таблица</a>
+
+  <a href="#penalty-reward-map" data-nav="penalty-reward-map">Карта «штраф – награда»</a><a href="#contribution-waterfall" data-nav="contribution-waterfall">Водопад вкладов</a><a href="#bar-with-dots" data-nav="bar-with-dots">Столбики с точками</a><a href="#rank-bump" data-nav="rank-bump">Места по волнам</a><a href="#dumbbell" data-nav="dumbbell">Гантели</a><a href="#forest-plot" data-nav="forest-plot">Лес коэффициентов</a><a href="#clustered-heatmap" data-nav="clustered-heatmap">Тепловая карта с кластерами</a><a href="#network-graph" data-nav="network-graph">Сетевой граф</a><a href="#risk-map" data-nav="risk-map">Карта рисков</a><a href="#event-density" data-nav="event-density">Плотность событий во времени</a><a href="#state-butterfly" data-nav="state-butterfly">Бабочка состояний</a><a href="#segmentation-panel" data-nav="segmentation-panel">Панель сегментации</a><a href="#session-anatomy" data-nav="session-anatomy">Анатомия захода</a><a href="#transition-graph" data-nav="transition-graph">Граф переходов</a><a href="#semantic-map" data-nav="semantic-map">Семантическая карта</a><a href="#coverage-chart" data-nav="coverage-chart">График покрытия</a>
+</div></nav>
+<main class="wrap">
+
+<section id="timeline"><h2>Таймлайн состояний</h2><div class="fn">ChartKit.stateTimeline</div>
+  <p class="use"><b>Когда:</b> нужно объяснить, что <em>значит</em> сегмент. Одна маленькая панель на сегмент, в каждой — столбик до 100% на каждую отметку времени, цвет = где человек в этот момент. Панели отсортированы по показателю (здесь — доля бронирования), в подзаголовке показатель и размер сегмента. <b>Правило:</b> перед любой разбивкой по сегментам, найденным моделью, сначала показываем такой график — «на чём построены сегменты».</p>
+  <div class="chart" id="c-timeline" style="height:580px"></div>
+  <details><summary>Код</summary><pre>ChartKit.stateTimeline('c-timeline', {
+  segments: [{ name: 'Searches by dates first', share: 25, value: 39 }, ...],   // value = показатель, необязателен
+  marks: [0, 10, 20, ..., 120], states: ['home', 'search form', ...],
+  data: { 'Searches by dates first': { home: [100, 38, ...], 'search form': [0, 54, ...] }, ... },  // % на отметку, в сумме 100
+  colors: { home: '#0F172A', ... }, base: 27, valueLabel: 'booking rate', shareLabel: 'of visits'
+});</pre></details>
+  <div class="fb" data-chart="timeline" data-title="Таймлайн состояний (stateTimeline)"></div>
+</section>
+
+<section id="stack"><h2>Стопка состояний</h2><div class="fn">ChartKit.stateStack</div>
+  <p class="use"><b>Когда:</b> нужно показать, где находятся все в каждый момент: площадь до 100%, слой = состояние, база — те, кто ещё на сайте. Тонкие слои в стопке не читаются, поэтому <b>клик по слою или по кнопке-названию показывает состояние отдельно</b>, от нулевой оси, со своими цифрами; клик по графику возвращает все слои. Отметки с маленькой базой приглушены. Шкала времени логарифмическая: видны и первые секунды, и хвост.</p>
+  <div class="chart" id="c-stack" style="height:480px"></div>
+  <p class="use" id="stack-note" style="margin-top:8px"></p>
+  <details><summary>Код</summary><pre>const stack = ChartKit.stateStack('c-stack', {
+  labels: ['0', '1 s', '2 s', ..., '30 min'], states: ['home', 'search form', ...],          // снизу вверх
+  data: { home: [100, 99, ...], 'search form': [0, 1, ...], ... },                      // % на отметку; normalize: true досчитывает до 100
+  colors: { home: '#334155', ... },
+  base: [5000, 4980, ...], minBase: 700, lowBaseLabel: 'small base', baseLabel: 'sessions still going on:'
+});
+stack.isolate('search form');   // то же, что клик по слою; stack.isolate(null) — назад</pre></details>
+  <div class="fb" data-chart="stack" data-title="Стопка состояний (stateStack)"></div>
+</section>
+
+<section id="sequence"><h2>Полоски отдельных заходов</h2><div class="fn">ChartKit.sequenceIndex</div>
+  <p class="use"><b>Когда:</b> рядом с агрегатом нужно показать отдельные пути, которые за ним стоят: каждая тонкая полоска — один заход от начала до конца, цвет = состояние в этот момент. Полоски сгруппированы по исходу (без бронирования / с бронированием) и отсортированы по длительности, красная отметка — ключевое событие (бронирование). Наведите мышь на полоску, чтобы увидеть детали.</p>
+  <div class="ck-chips" id="seq-scale"><button type="button" class="ck-chip ck-chip--on" data-scale="log">лог-шкала, весь заход</button><button type="button" class="ck-chip" data-scale="linear">обычная шкала, первые 10 минут</button></div>
+  <div id="c-sequence"></div>
+  <details><summary>Код</summary><pre>const seq = ChartKit.sequenceIndex('c-sequence', {
+  rows: [{ group: 'booked', end: 271, mark: 240, segments: [[0, 33, 0], [33, 60, 1], ...] }, ...],   // [от, до, индекс состояния], секунды
+  states: ['home', 'search form', ...], colors: { home: '#334155', ... },
+  groups: [{ key: 'no booking', label: 'did not book' }, { key: 'booked', label: 'booked' }],
+  markLabel: 'booking', scale: 'log'
+});
+seq.redraw({ scale: 'linear', maxTime: 600 });</pre></details>
+  <div class="fb" data-chart="sequence" data-title="Полоски отдельных заходов (sequenceIndex)"></div>
+</section>
+
+<section id="tree"><h2>Дерево сегментов</h2><div class="fn">ChartKit.segmentTree</div>
+  <p class="use"><b>Когда:</b> сегменты заданы правилами (дерево решений на переменных, которые двигают показатель). Каждое условие написано один раз, на своей развилке; в каждом узле, включая промежуточные, — доля базы и значение показателя. Размер кружка = доля, цвет = выше (синий) или ниже (оранжевый) среднего. Конечные сегменты справа. <b>Правило:</b> сегменты по правилам рисуем деревом, а не столбиками с длинными подписями-перечислениями.</p>
+  <div class="chart" id="c-tree" style="height:640px"></div>
+  <details><summary>Код</summary><pre>ChartKit.segmentTree('c-tree', {
+  tree: { name: 'All visits', share: 100, value: 27, children: [
+    { name: 'Came from a price alert', share: 5, value: 61 },
+    { name: 'Booked here before', share: 24, value: 41, children: [...] } ] },
+  base: 27, valueLabel: 'booking rate', shareLabel: 'of visits'
+});
+// python/tree_segments.py строит такую структуру из дерева sklearn</pre></details>
+  <div class="fb" data-chart="tree" data-title="Дерево сегментов (segmentTree)"></div>
+</section>
+
+<section id="drivers"><h2>Драйверы: что двигает показатель</h2><div class="fn">ChartKit.divergingBars</div>
+  <p class="use"><b>Когда:</b> первый график темы или шага — что двигает показатель вверх и что вниз. Столбик = разница показателя «признак есть / нет» в процентных пунктах; в подписи оба значения и размер группы.</p>
+  <div class="chart" id="c-drivers" style="height:300px"></div>
+  <details><summary>Код</summary><pre>ChartKit.divergingBars('c-drivers', {
+  items: [{ name: 'Booked here before', withValue: 41, withoutValue: 23, share: 24 }, ...]
+});</pre></details>
+  <div class="fb" data-chart="drivers" data-title="Драйверы, расходящиеся столбики (divergingBars)"></div>
+</section>
+
+<section id="grouped"><h2>Пары столбиков</h2><div class="fn">ChartKit.groupedBars</div>
+  <p class="use"><b>Когда:</b> нужно сравнить две-три цифры по каждой категории, например долю заходов и долю бронирования у сегмента. <b>Правило:</b> то, что сравнивают, стоит рядом на одной шкале, а не в разных панелях.</p>
+  <div class="chart" id="c-grouped" style="height:440px"></div>
+  <details><summary>Код</summary><pre>ChartKit.groupedBars('c-grouped', {
+  names: ['Searches by dates first', ...],
+  series: [{ name: 'share of visits', values: [...] }, { name: 'booking rate', values: [...] }]
+});</pre></details>
+  <div class="fb" data-chart="grouped" data-title="Пары столбиков (groupedBars)"></div>
+</section>
+
+<section id="flow"><h2>Поток между группировками</h2><div class="fn">ChartKit.flowSankey</div>
+  <p class="use"><b>Когда:</b> нужно связать три группировки: с чего заход начался, что в нём происходило, чем кончился. Узлы переставлены так, чтобы меньше пересечений; похожие узлы в разных колонках одного семейства цветов; клик по узлу может вести в раздел отчёта про этот сегмент.</p>
+  <div class="chart" id="c-flow" style="height:640px"></div>
+  <p class="use" id="flow-click" style="margin-top:8px">Кликните по узлу.</p>
+  <details><summary>Код</summary><pre>ChartKit.flowSankey('c-flow', {
+  columns: [['Searches by dates first', ...], ['compared in the results list', ...], ['Decisive booker', ...]],
+  links: [{ source: 'Searches by dates first', target: 'compared in the results list', value: 661 }, ...],
+  colors: { 'Searches by dates first': '#2563EB', ... }, pinLast: ['Saved nothing'],
+  onNodeClick: name => location.hash = '#' + slug(name)
+});</pre></details>
+  <div class="fb" data-chart="flow" data-title="Поток, санкей (flowSankey)"></div>
+</section>
+
+<section id="map"><h2>Карта сегментов</h2><div class="fn">ChartKit.segmentMap</div>
+  <p class="use"><b>Когда:</b> все сегменты надо показать на одной картинке: по горизонтали размер, по вертикали показатель. Подписи расставляются автоматически без наложений; если подпись пришлось отодвинуть, к точке идёт линия-выноска.</p>
+  <div class="chart" id="c-map" style="height:560px"></div>
+  <details><summary>Код</summary><pre>ChartKit.segmentMap('c-map', {
+  points: [{ name: 'Searches by dates first', x: 25, y: 39, group: 'first two minutes', color: '#2563EB' }, ...],
+  xName: 'share of all visits, %', yName: 'booking rate, %',
+  reference: { y: 27, label: 'average 27%' }
+});</pre></details>
+  <div class="fb" data-chart="map" data-title="Карта сегментов (segmentMap)"></div>
+</section>
+
+<section id="ladder"><h2>Лесенка</h2><div class="fn">ChartKit.ladder</div>
+  <p class="use"><b>Когда:</b> нужен стержень отчёта: «из 100 начавших до каждого шага дошло N», рядом с каждой ступенькой — потеря и её причина. Ступеньки могут быть ссылками на разделы, где шаг разобран.</p>
+  <div id="c-ladder"></div>
+  <details><summary>Код</summary><pre>ChartKit.ladder('c-ladder', { steps: [
+  { name: 'Opened the site', value: 100 },
+  { name: 'Ran a search', value: 64, loss: 'left from the home page', href: '#step-1' }, ... ] });</pre></details>
+  <div class="fb" data-chart="ladder" data-title="Лесенка (ladder)"></div>
+</section>
+
+<section id="heat"><h2>Тепловая таблица</h2><div class="fn">ChartKit.heatTable</div>
+  <p class="use"><b>Когда:</b> сегменты описываются переменными. Ячейка закрашена только там, где значение заметно отличается от общего (не меньше 3 пунктов и 15% относительно), поэтому глаз идёт к настоящим различиям, а не к шуму.</p>
+  <div id="c-heat"></div>
+  <details><summary>Код</summary><pre>ChartKit.heatTable('c-heat', {
+  rows: ['Booked here before', ...], columns: [{ name: 'Goes straight to booking', sub: '6% of visits' }, ...],
+  values: { 'Booked here before': [52, 61, ...] }, overall: { 'Booked here before': 24 }
+});</pre></details>
+  <div class="fb" data-chart="heat" data-title="Тепловая таблица (heatTable)"></div>
+</section>
+
+<section id="penalty-reward-map"><h2>Карта «штраф – награда»</h2><div class="fn">ChartKit.penaltyRewardMap</div>
+  <p class="use">Показывает, что атрибут делает с выбором с двух сторон: x = штраф (насколько плохо исполненный атрибут отталкивает, в п.п.), y = награда (насколько хорошо исполненный притягивает). Пунктирные линии по средним делят поле на четыре зоны — привлекают (награда выше, штраф ниже), ключевые (обе выше), базовые (штраф выше, награда ниже), второстепенные; цвет точки = зона. Опция ci рисует крест доверительного интервала за точкой; подписи разводятся автоматически с выносками; под графиком — таблица зон. Вызов функции несколько раз с highlight и compact даёт малые множители по группам в общем масштабе.</p>
+  <div class="chart" id="c-penalty-reward-map" style="height:520px"></div>
+  <details><summary>Код</summary><pre>ChartKit.penaltyRewardMap(&#x27;c-penalty-reward-map&#x27;, {
+  points: [{ name: &#x27;Value for money&#x27;, x: 8.5, y: 12.4, xCi: 2.3, yCi: 1.3 }, ...],   // x = penalty, y = reward, pp; ± optional
+  xName: &#x27;penalty, pp&#x27;, yName: &#x27;reward, pp&#x27;, unit: &#x27;pp&#x27;,
+  zones: { topLeft: &#x27;attract&#x27;, topRight: &#x27;key&#x27;, bottomRight: &#x27;basic&#x27;, bottomLeft: &#x27;secondary&#x27; },
+  ci: true, table: true                       // table: an element / id, or true = a div right after the chart
+});
+// small multiples: the same call per group with compact: true, highlight: &#x27;Pool or gym&#x27;, xRange: [-1, 17], yRange: [-1, 16]</pre></details>
+  <div class="fb" data-chart="penalty-reward-map" data-title="Карта «штраф – награда» (penaltyRewardMap)"></div>
+</section>
+
+<section id="contribution-waterfall"><h2>Водопад вкладов</h2><div class="fn">ChartKit.contributionWaterfall</div>
+  <p class="use">Объясняет разрыв: как группа приходит от опорного значения (средний отель) к своему, по одному горизонтальному шагу на фактор. Шаги отсортированы по модулю, синий поднимает значение, оранжевый опускает; пунктирный столбик — сумма всех факторов, серый — остаток, который факторы не объясняют. Начальный и конечный столбики стоят от нуля, каждый шаг начинается там, где кончился предыдущий (прозрачный базовый стек). При наведении — значение и ± погрешность.</p>
+  <div class="chart" id="c-contribution-waterfall" style="height:480px"></div>
+  <details><summary>Код</summary><pre>ChartKit.contributionWaterfall(&#x27;c-contribution-waterfall&#x27;, {
+  start: { label: &#x27;Average hotel&#x27;, value: 54.0 }, end: { label: &#x27;Hotel D, actual&#x27;, value: 62.1 },
+  steps: [{ name: &#x27;Location&#x27;, value: 3.8, ci: 1.0 }, { name: &#x27;Noise insulation&#x27;, value: -2.2, ci: 0.9 }, ...],   // pp, sorted by |value|
+  unit: &#x27;%&#x27;, stepUnit: &#x27;pp&#x27;, summaryLabel: &#x27;All attributes together&#x27;, residualLabel: &#x27;Not explained by attributes&#x27;
+});</pre></details>
+  <div class="fb" data-chart="contribution-waterfall" data-title="Водопад вкладов (contributionWaterfall)"></div>
+</section>
+
+<section id="bar-with-dots"><h2>Столбики с точками</h2><div class="fn">ChartKit.barWithDots</div>
+  <p class="use">Когда одно число на пункт надо показать вместе с его устойчивостью: столбик — эффект на полной базе (синий поднимает исход, оранжевый опускает; один цвет, если мера без знака), точки — та же мера по волнам, от светлой к тёмной. С ci: true поперёк столбика рисуется ус доверительного интервала; в подсказке он есть всегда. Пункты отсортированы по модулю эффекта, самый большой сверху.</p>
+  <div class="chart" id="c-bar-with-dots" style="height:520px"></div>
+  <details><summary>Код</summary><pre>ChartKit.barWithDots(&#x27;c-bar-with-dots&#x27;, {
+  items: [{ name: &#x27;Room cleanliness&#x27;, value: 8.7, ci: 1.18, waves: [8.5, 8.2, 8.5] }, ...],   // value on the full base, one entry per wave
+  waveNames: [&#x27;wave 1&#x27;, &#x27;wave 2&#x27;, &#x27;wave 3&#x27;], unit: &#x27; pp&#x27;, signed: true, ci: true, baseLabel: &#x27;all waves&#x27;
+});
+// an unsigned score from an older method: { ..., signed: false, reference: &#x27;#7C3AED&#x27;, unit: &#x27;%&#x27; }</pre></details>
+  <div class="fb" data-chart="bar-with-dots" data-title="Столбики с точками (barWithDots)"></div>
+</section>
+
+<section id="rank-bump"><h2>Места по волнам</h2><div class="fn">ChartKit.rankBump</div>
+  <p class="use">Показывает, держится ли порядок пунктов от волны к волне: y = место (1 сверху), по линии на пункт через волны. Линии, сдвинувшиеся на minMove мест и больше (по умолчанию 5) между любыми двумя волнами, окрашены, остальные серые — взгляд идёт на настоящее движение; в конечной подписи чистый сдвиг, например «Breakfast quality (−7)». Наведение выделяет линию и показывает все места.</p>
+  <div class="chart" id="c-rank-bump" style="height:460px"></div>
+  <details><summary>Код</summary><pre>ChartKit.rankBump(&#x27;c-rank-bump&#x27;, {
+  waves: [&#x27;wave 1&#x27;, &#x27;wave 2&#x27;, &#x27;wave 3&#x27;],
+  items: [{ name: &#x27;Room cleanliness&#x27;, values: [14.3, 15.56, 16.47] }, ...],   // or ranks: [1, 1, 2] directly
+  minMove: 5, color: &#x27;#7C3AED&#x27;
+});</pre></details>
+  <div class="fb" data-chart="rank-bump" data-title="Места по волнам (rankBump)"></div>
+</section>
+
+<section id="dumbbell"><h2>Гантели</h2><div class="fn">ChartKit.dumbbell</div>
+  <p class="use">Используйте, когда в каждой строке нужно сравнить два значения одной меры — до и после, в первом поиске и в последнем, пользователи и непользователи. Две точки — значения, толстая линия между ними окрашена по направлению (синяя — второе значение выше, оранжевая — ниже), подписи на концах дают числа, короткий вертикальный штрих — база (общее значение) для строки или для всего графика. Строки, где разница незначима, передаются с dim: true и рисуются блёкло. Наведите на строку — увидите оба значения, разницу и базу.</p>
+  <div class="chart" id="c-dumbbell" style="height:480px"></div>
+  <details><summary>Код</summary><pre>ChartKit.dumbbell(&#x27;c-dumbbell&#x27;, {
+  rows: [{ name: &#x27;Price range&#x27;, a: 52, b: 38, reference: 44 }, { name: &#x27;Pool&#x27;, a: 11, b: 10, reference: 10, dim: true }, ...],
+  aLabel: &#x27;in the first search&#x27;, bLabel: &#x27;in the last search before booking&#x27;, referenceLabel: &#x27;in all searches&#x27;,
+  format: v =&gt; Math.round(v) + &#x27;%&#x27;, min: 0            // reference: 44 (one base for all rows) or [refA, refB] per row
+});</pre></details>
+  <div class="fb" data-chart="dumbbell" data-title="Гантели (dumbbell)"></div>
+</section>
+
+<section id="forest-plot"><h2>Лес коэффициентов</h2><div class="fn">ChartKit.forestPlot</div>
+  <p class="use">Используйте, чтобы показать, что по модели делает каждый фактор сам по себе при прочих равных: строка на коэффициент, точка — оценка, усы — 95% интервал, сортировка так, что самый большой эффект сверху. Опорная линия — 0 для разниц в процентных пунктах или 1 для отношений (scale: 'ratio', множители на логарифмической оси). Значимые строки (p ниже alpha или интервал не задевает опору) получают цветную точку — синюю выше опоры, оранжевую ниже, — тёмные усы и жирную подпись вида «+3.2 pp [1.1; 5.3]»; остальные серые. Наведите на строку — увидите числа и p-значение.</p>
+  <div class="chart" id="c-forest-plot" style="height:480px"></div>
+  <details><summary>Код</summary><pre>ChartKit.forestPlot(&#x27;c-forest-plot&#x27;, {
+  rows: [{ name: &#x27;Studies daily&#x27;, est: 21.3, lo: 15.6, hi: 27.0 }, { name: &#x27;Aged under 35&#x27;, est: -1.1, lo: -4.6, hi: 2.4, p: 0.54 }, ...],
+  unit: &#x27;pp&#x27;, xName: &#x27;change in the chance of finishing the course, pp&#x27;
+});
+ChartKit.forestPlot(&#x27;c-forest-plot-ratio&#x27;, { rows: [{ name, est: 1.71, lo: 1.38, hi: 2.12 }, ...], scale: &#x27;ratio&#x27;, nsLabel: &#x27;(n.s.)&#x27; });</pre></details>
+  <div class="fb" data-chart="forest-plot" data-title="Лес коэффициентов (forestPlot)"></div>
+</section>
+
+<section id="clustered-heatmap"><h2>Тепловая карта с кластерами</h2><div class="fn">ChartKit.clusteredHeatmap</div>
+  <p class="use">Используйте, чтобы увидеть, какие группы похожи друг на друга по профилю из многих переменных — типы отелей по тому, что ценят их гости, сегменты по поведению. Строки — переменные, столбцы — группы; ячейка закрашена по тому, насколько группа отличается от общего значения строки (синий — выше, оранжевый — ниже, насыщеннее — сильнее), или по самому знаковому значению, если общее не передано. Строки и столбцы переупорядочены кластеризацией Уорда, дендрограммы нарисованы рядом с картой (строки — справа, столбцы — снизу), так что похожие группы стоят рядом. С orderBy: 'City hotel' столбцы вместо этого сортируются по евклидову расстоянию до указанного столбца, расстояние пишется в заголовке, а дерево столбцов не рисуется. Наведите на ячейку — увидите значение и общее.</p>
+  <div class="chart" id="c-clustered-heatmap" style="height:520px"></div>
+  <details><summary>Код</summary><pre>ChartKit.clusteredHeatmap(&#x27;c-clustered-heatmap&#x27;, {
+  rows: [&#x27;Room cleanliness&#x27;, &#x27;Value for money&#x27;, ...], columns: [&#x27;City hotel&#x27;, &#x27;Resort&#x27;, ...],
+  values: [[71, 70, ...], [54, 49, ...], ...],      // one array per row, one number per column
+  overall: [71, 58, ...],                            // cell = value − overall; omit to shade the signed values themselves
+  cluster: { rows: true, cols: true }, unit: &#x27;pp&#x27;    // or orderBy: &#x27;City hotel&#x27; to sort columns by distance to one column
+});</pre></details>
+  <div class="fb" data-chart="clustered-heatmap" data-title="Тепловая карта с кластерами (clusteredHeatmap)"></div>
+</section>
+
+<section id="network-graph"><h2>Сетевой граф</h2><div class="fn">ChartKit.networkGraph</div>
+  <p class="use">Используйте, чтобы показать построенную сеть бинарных поведений — байесовскую сеть, путевую модель — в стиле «Tetrad + Gephi»: узел — поведение, его размер — доля людей с этим поведением (6 + 34·sqrt(доля / макс)), цвет — сообщество, найденное жадным проходом по модулярности (или переданное для узла), подпись — «Название N%». Ребро — коэффициент модели: толщина = 1 + 9·|coef| / макс, цвет — цвет узла-источника с прозрачностью 85%, изогнутое, со стрелкой, с подписью «.23». По умолчанию — детерминированная силовая раскладка Фрухтермана — Рейнгольда; с layout: 'columns' узлы ставятся в столбцы по node.column (вид «путь к цели»), внутри столбца упорядочены по барицентру предшественников, над столбцами подписи, целевой узел обведён кольцом, входящие в него рёбра нарисованы цветом текста. Наведите на узел или ребро — увидите числа; тяните — панорамирование, колесо — масштаб.</p>
+  <div class="chart" id="c-network-graph" style="height:560px"></div>
+  <details><summary>Код</summary><pre>ChartKit.networkGraph(&#x27;c-network-graph&#x27;, {
+  nodes: [{ name: &#x27;Signed in&#x27;, prevalence: 38, column: 0 }, { name: &#x27;Compared rooms&#x27;, prevalence: 17, column: 2 }, { name: &#x27;Booked&#x27;, prevalence: 27, column: 3 }, ...],
+  edges: [{ source: &#x27;Compared rooms&#x27;, target: &#x27;Booked&#x27;, coef: 0.43 }, { source: &#x27;Entered dates&#x27;, target: &#x27;Browsed destinations&#x27;, coef: -0.22 }, ...],
+  target: &#x27;Booked&#x27;, layout: &#x27;force&#x27;                      // or layout: &#x27;columns&#x27;, columns: [&#x27;How the visit started&#x27;, &#x27;First actions&#x27;, &#x27;Engagement&#x27;, &#x27;Outcome&#x27;]
+});</pre></details>
+  <div class="fb" data-chart="network-graph" data-title="Сетевой граф (networkGraph)"></div>
+</section>
+
+<section id="risk-map"><h2>Карта рисков</h2><div class="fn">ChartKit.riskMap</div>
+  <p class="use">Ранжирует то, что ломается по дороге к результату: x — как часто событие случается (доля заходов, логарифмическая шкала), y — как часто после него уходят без результата. Площадь кружка — потерянные заходы, цвет — шаг пути, полый кружок — мало случаев, усы — 95% интервал Уилсона, пунктир — фон после обычного действия. Курсивные подписи называют квадранты; заливка — «часто и хотя бы вдвое выше фона». Наведение показывает счётчики.</p>
+  <div class="chart" id="c-risk-map" style="height:520px"></div>
+  <details><summary>Код</summary><pre>ChartKit.riskMap(&#x27;c-risk-map&#x27;, {
+  events: [{ name: &#x27;no rooms for these dates&#x27;, note: &#x27;sold out&#x27;, category: &#x27;search&#x27;, x: 6, n: 3600, k: 1440 }, ...],   // x = % of sessions, k = lost of n
+  background: 9.5, backgroundLabel: &#x27;background, ordinary action&#x27;, minN: 100,                                   // hollow bubble below minN
+  colors: { start: &#x27;#334155&#x27;, search: &#x27;#2563EB&#x27;, ... }, labelPositions: { &#x27;page crash&#x27;: &#x27;right&#x27; },
+  quadrants: { topLeft: &#x27;rare but deadly&#x27;, topRight: &#x27;mass killers&#x27;, bottomRight: &#x27;loud but harmless&#x27;, bottomLeft: &#x27;almost harmless&#x27; },
+  zone: { x: 5, factor: 2, label: &#x27;common and deadly&#x27; }, xName: &#x27;share of sessions (log) →&#x27;, yName: &#x27;↑ lost within a minute, %&#x27;
+});</pre></details>
+  <div class="fb" data-chart="risk-map" data-title="Карта рисков (riskMap)"></div>
+</section>
+
+<section id="event-density"><h2>Плотность событий во времени</h2><div class="fn">ChartKit.eventDensity</div>
+  <p class="use">Показывает, когда что-то происходит после ключевого момента (бронирование, регистрация): по одной сглаженной кривой на канал на логарифмической оси времени с читаемыми делениями (30 с, 1 мин, … 24 ч или дни, если деления переданы). Кривая — ядерная плотность логарифма времени с пиком 1, поэтому сравниваются формы, а не объёмы; подсказка даёт накопленную долю канала к моменту под курсором. Пунктирные вертикали — вехи («письмо-напоминание»). Можно передать сырые времена (плотность считается в браузере) или готовые кривые.</p>
+  <div class="chart" id="c-event-density" style="height:420px"></div>
+  <details><summary>Код</summary><pre>ChartKit.eventDensity(&#x27;c-event-density&#x27;, {
+  channels: [{ name: &#x27;contact property (1250)&#x27;, color: &#x27;#2563EB&#x27;, times: [18, 6400, 2.5, ...] },      // minutes since the key moment
+             { name: &#x27;leave a review (2100)&#x27;, times: [...], area: true }, ...],                // or curve: [...] + cum: [...] aligned with grid
+  tMin: 0.5, tMax: 43200, ticks: [1, 5, 30, 60, 360, 1440, 4320, 10080, 43200],
+  milestones: [{ t: 1, label: &#x27;confirmation e-mail · 1 min&#x27; }, { t: 360, label: &#x27;reminder e-mail · 6 h&#x27; }],
+  xName: &#x27;time since booking&#x27;, cumLabel: &#x27;by this moment&#x27;
+});</pre></details>
+  <div class="fb" data-chart="event-density" data-title="Плотность событий во времени (eventDensity)"></div>
+</section>
+
+<section id="state-butterfly"><h2>Бабочка состояний</h2><div class="fn">ChartKit.stateButterfly</div>
+  <p class="use">Когда «ушедшая» масса важна не меньше активной: 100%-стек по времени, зеркальный относительно нуля — состояния «вышел» и «пауза» растут вверх, активные экраны лежат под линией, ось y идёт 0–100 в обе стороны. Отметки времени (лог или линейные) задаются подписями. Клик по элементу легенды выключает состояние; наведение даёт точные доли в отметке.</p>
+  <div class="chart" id="c-state-butterfly" style="height:460px"></div>
+  <details><summary>Код</summary><pre>ChartKit.stateButterfly(&#x27;c-state-butterfly&#x27;, {
+  labels: [&#x27;0&#x27;, &#x27;1 s&#x27;, &#x27;2 s&#x27;, ..., &#x27;2 h&#x27;], states: [&#x27;home&#x27;, &#x27;search form&#x27;, ..., &#x27;paused&#x27;, &#x27;left without booking&#x27;, &#x27;left with booking&#x27;],
+  up: [&#x27;paused&#x27;, &#x27;left without booking&#x27;, &#x27;left with booking&#x27;],                 // drawn above zero; the rest below
+  data: { home: [100, 99, ...], &#x27;left with booking&#x27;: [0, 0, ...], ... },         // % of ALL sessions per mark
+  colors: { home: &#x27;#334155&#x27;, ... }, yName: &#x27;← active on the site        left or paused →&#x27;
+});</pre></details>
+  <div class="fb" data-chart="state-butterfly" data-title="Бабочка состояний (stateButterfly)"></div>
+</section>
+
+<section id="segmentation-panel"><h2>Панель сегментации</h2><div class="fn">ChartKit.segmentationPanel</div>
+  <p class="use">Первая таблица после сегментации: строка на сегмент — имя, полоска доли базы, полоска результата со значением и спарклайн таймлайна состояний: крошечный 100%-столбик на отметку времени, цвет — состояние. Строки отсортированы по результату, общая строка сверху — глаз за один проход читает «кто большой, кто конвертируется, что они делают». Наведение на столбик спарклайна показывает долю состояния. Чистый HTML, высоту задаёт сам; нужен lib/parts/segmentation-panel.css.</p>
+  <div id="c-segmentation-panel"></div>
+  <details><summary>Код</summary><pre>ChartKit.segmentationPanel(&#x27;c-segmentation-panel&#x27;, {
+  rows: [{ name: &#x27;Searches by dates first&#x27;, share: 25, value: 39, color: &#x27;#2563EB&#x27; }, ..., { name: &#x27;All visits&#x27;, share: 100, value: 27, overall: true }],
+  valueLabel: &#x27;booking rate&#x27;, shareLabel: &#x27;share of visits&#x27;,
+  mini: { marks: [0, 10, ..., 120], states: [&#x27;home&#x27;, &#x27;search form&#x27;, ...], colors: { home: &#x27;#0F172A&#x27;, ... },
+          data: { &#x27;Searches by dates first&#x27;: { home: [100, 38, ...], &#x27;search form&#x27;: [0, 54, ...] }, ... }, unit: &#x27;s&#x27;, label: &#x27;screen at&#x27; }   // optional sparkline
+});</pre></details>
+  <div class="fb" data-chart="segmentation-panel" data-title="Панель сегментации (segmentationPanel)"></div>
+</section>
+
+<section id="session-anatomy"><h2>Анатомия захода</h2><div class="fn">ChartKit.sessionAnatomy</div>
+  <p class="use">Покажите один заход как историю: общая ось времени (линейная или логарифмическая; паузы длиннее `pauseAfter` заштрихованы и укорочены), дорожки = экраны цветными отрезками с чёрточкой на каждом переходе, строка действий с выбором — что добавили в подборку или в поездку (нумерованная точка = новая позиция, маленькая точка = «ещё одна», красный крест = убрал), строка запросов (ромб в начале запроса, красный — если ничего не найдено, полоска — пока выдача была на экране), ромбики там, где открыта карточка, пунктирное окно подсветки, булавки событий и необязательная ступенчатая дорожка значения (баланс, сумма поездки) сверху. Подсказки — при наведении. Переключатели делает вызывающий: `redraw({ scale: 'log' })`, `redraw({ compressPauses: false })`.</p>
+  <div id="c-session-anatomy"></div>
+  <details><summary>Код</summary><pre>const s = ChartKit.sessionAnatomy(&#x27;c-session-anatomy&#x27;, {
+  lanes: [&#x27;home&#x27;, &#x27;search form&#x27;, &#x27;results list&#x27;, &#x27;hotel page&#x27;, &#x27;room choice&#x27;, &#x27;booking form&#x27;],   // top to bottom
+  segments: [[0, 11, 0], [11, 38, 1], [38, 97, 2], ...],                       // [from s, to s, lane index]
+  end: 934, scale: &#x27;linear&#x27;, compressPauses: true, pauseAfter: 120,
+  adds: [{ t: 221, n: 1, name: &#x27;studio by the beach, 2 nights&#x27;, note: &#x27;from the room list&#x27; }, { t: 392, name: &#x27;old town guesthouse&#x27; }],   // no n = one more of an item
+  removes: [{ t: 790, name: &#x27;studio by the beach, 2 nights&#x27; }], cards: [{ t: 99, name: &#x27;guesthouse by the pier&#x27; }],
+  queries: [{ t: 13, text: &#x27;seaside town&#x27;, found: 86, until: 97 }, { t: 232, text: &#x27;old twon&#x27;, found: 0 }],
+  events: [{ t: 929, label: &#x27;booked 211.00&#x27;, color: &#x27;#059669&#x27; }], highlight: { from: 0, to: 120, label: &#x27;first two minutes&#x27; },
+  valueTrack: [{ t: 221, v: 234 }, ...], valueLabel: &#x27;trip total&#x27;,             // optional step line on top
+  words: { items: &#x27;stays in the trip&#x27;, queries: &#x27;destination searches&#x27;, added: &#x27;added stay&#x27;, plusOne: &#x27;one more night&#x27; }   // row captions and tooltip words
+});
+s.redraw({ scale: &#x27;log&#x27; });   // s.redraw({ compressPauses: false }); s.dispose()</pre></details>
+  <div class="fb" data-chart="session-anatomy" data-title="Анатомия захода (sessionAnatomy)"></div>
+</section>
+
+<section id="transition-graph"><h2>Граф переходов</h2><div class="fn">ChartKit.transitionGraph</div>
+  <p class="use">Покажите, куда уходят с каждого экрана. Узлы стоят там, где вы их поставили (фиксированная раскладка сохраняет картинку между группами), размер узла ~ корень из числа входов, подпись даёт входы, медиану пребывания и долю уходов, на которых заход кончается; направленные рёбра окрашены по источнику, ширина ~ корень из числа переходов, подпись — доля уходов из источника, рёбра тоньше `minShare` скрыты. Ссылки на цель, которой нет среди узлов, считаются выходами. `matrix: true` добавляет под графиком полную таблицу «откуда → куда» с синей заливкой; при `links2` и `matrixMode: 'diff'` таблица показывает разницу двух групп в п.п. (синее = больше в первой группе, оранжевое = меньше).</p>
+  <div class="chart" id="c-transition-graph" style="height:560px"></div>
+  <details><summary>Код</summary><pre>const tg = ChartKit.transitionGraph(&#x27;c-transition-graph&#x27;, {
+  nodes: [{ name: &#x27;home&#x27;, x: 80, y: 330, entries: 24000, dwell: 9, color: &#x27;#334155&#x27; }, { name: &#x27;search form&#x27;, x: 360, y: 110, entries: 17800, dwell: 24 }, ...],
+  links: [{ source: &#x27;home&#x27;, target: &#x27;search form&#x27;, count: 9347 }, { source: &#x27;booking form&#x27;, target: &#x27;left with booking&#x27;, count: 1988 }, ...],  // unknown target = exit
+  links2: [...same shape for a second group...], goodEnds: [&#x27;left with booking&#x27;],
+  minShare: 15, matrix: true, matrixMode: &#x27;links&#x27;   // &#x27;links2&#x27; | &#x27;diff&#x27; (links minus links2, pp)
+});
+tg.redraw({ links: BOOKED, minShare: 25 });   // chips / switches are the caller&#x27;s job; tg.dispose()</pre></details>
+  <div class="fb" data-chart="transition-graph" data-title="Граф переходов (transitionGraph)"></div>
+</section>
+
+<section id="semantic-map"><h2>Семантическая карта</h2><div class="fn">ChartKit.semanticMap</div>
+  <p class="use">Карта для исследования двумерного вложения (t-SNE, UMAP) текстов или объектов: точка = единица, цветная — если из одной из главных групп, серая — из другой группы, кольцо — без группы. Под главными группами лежит свечение. Масштаб колесом после клика по карте (или с Ctrl), перетаскивание, двойной клик или кнопки + / − / сброс. Подписи меняются с масштабом: названия групп и их главные слова при малом увеличении, подгруппы при среднем, мелкие скопления при большом; плашки подписей расходятся и указывают на центроид выноской. Наведение на точку или подпись — подсказка; чипы групп фокусируют одну группу (наведение — предпросмотр, клик — закрепить). `onClick(point, label)` получает точку или подпись, по которой кликнули.</p>
+  <div id="c-semantic-map"></div>
+  <details><summary>Код</summary><pre>const map = ChartKit.semanticMap(&#x27;c-semantic-map&#x27;, {
+  points: [{ x: -3.2, y: 1.7, group: &#x27;price&#x27;, sub: &#x27;too expensive&#x27;, cluster: &#x27;too expensive / 1&#x27;, text: &#x27;...&#x27; }, ...],   // group: null = unlabelled
+  levels: [{ zoom: 1, field: &#x27;group&#x27; }, { zoom: 2.2, field: &#x27;sub&#x27; }, { zoom: 5, field: &#x27;cluster&#x27; }],
+  words: { group: { price: [&#x27;expensive&#x27;, &#x27;fee&#x27;, &#x27;deal&#x27;] }, sub: { &#x27;too expensive&#x27;: [&#x27;expensive&#x27;, &#x27;price&#x27;, &#x27;overpriced&#x27;] }, cluster: { ... } },
+  maxGroups: 8, colors: { price: &#x27;#F97316&#x27; },      // top groups get colours, the rest are grey
+  onClick: (point, label) =&gt; { ... }              // one of the two is set
+});
+map.focus(&#x27;price&#x27;); map.reset(); map.redraw({ points: NEW }); map.dispose();</pre></details>
+  <div class="fb" data-chart="semantic-map" data-title="Семантическая карта (semanticMap)"></div>
+</section>
+
+<section id="coverage-chart"><h2>График покрытия</h2><div class="fn">ChartKit.coverageChart</div>
+  <p class="use">Покажите, какую часть базы покрывает набор элементов (тегов, правил, признаков) и где добавление новых перестаёт окупаться: столбец на элемент в жадном порядке, серое = уже покрыто предыдущими, синее = впервые покрыто этим, сверху «+N», ось y в процентах базы. Столбцы после последнего элемента, который добавляет хотя бы `minGain` базы, стоят за пунктиром — это плато. Передайте готовые `{ items, covered, added }` или сырые множества `sets: { item: [ids] }` — тогда жадный порядок считается здесь. `onClick(item)` срабатывает по столбцу или подписи.</p>
+  <div class="chart" id="c-coverage-chart" style="height:440px"></div>
+  <details><summary>Код</summary><pre>ChartKit.coverageChart(&#x27;c-coverage-chart&#x27;, {
+  sets: { &#x27;general praise&#x27;: [1, 4, 9, ...], &#x27;price&#x27;: [4, 12, ...], ... },            // raw memberships: greedy order is computed here
+  total: 1500, minGain: 0.005,                                                       // or precomputed: items: [...], covered: [483, 671, ...], added: [483, 188, ...]
+  coveredLabel: &#x27;already covered by earlier tags&#x27;, addedLabel: &#x27;newly covered by this tag&#x27;,
+  onClick: item =&gt; console.log(item)
+});
+ChartKit.greedyCoverage(sets, total)   // -&gt; { items, covered, added, total } if you need the order alone</pre></details>
+  <div class="fb" data-chart="coverage-chart" data-title="График покрытия (coverageChart)"></div>
+</section>
+</main>
+<footer><div class="wrap">Библиотека: <code>lib/charts.js</code> · стили: <code>lib/charts.css</code> · демо-данные: <code>examples/demo-data.js</code> · помощники на Python: <code>python/</code> · английская версия галереи: <a href="index.html">index.html</a>.</div></footer>
+
+<div class="bar"><div class="wrap">
+  <span class="n" id="count">Оценено 0 из 10</span>
+  <button type="button" id="copy" class="primary">Скопировать отзыв</button>
+  <button type="button" id="dl">Скачать .json</button>
+  <a class="btn" id="issue" href="#" target="_blank" rel="noopener">Отправить как issue на GitHub</a>
+  <button type="button" id="reset">Очистить</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="lib/charts.js"></script>
+<script src="examples/demo-data.js"></script>
+<script>
+  // ---- charts (same demo data as index.html)
+  ChartKit.stateTimeline('c-timeline', { ...DEMO.timeline(), valueLabel: 'booking rate', shareLabel: 'of visits' });
+  const SIM = DEMO.sessions();
+  ChartKit.stateStack('c-stack', { ...SIM.stack, lowBaseLabel: 'small base', baseLabel: 'sessions still going on:' });
+  document.getElementById('stack-note').textContent = SIM.n.toLocaleString('ru-RU') + ' смоделированных заходов; на каждой отметке считаются только те, что ещё не закончились. Бледная зона справа — база меньше ' + SIM.stack.minBase + ' заходов, это шум.';
+  const seq = ChartKit.sequenceIndex('c-sequence', { ...SIM.index, scale: 'log' });
+  document.querySelectorAll('#seq-scale button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#seq-scale button').forEach(x => x.classList.toggle('ck-chip--on', x === b));
+    seq.redraw(b.dataset.scale === 'log' ? { scale: 'log', maxTime: undefined } : { scale: 'linear', maxTime: 600 });
+  }));
+  ChartKit.segmentTree('c-tree', { tree: DEMO.TREE, base: 27, valueLabel: 'booking rate', shareLabel: 'of visits', left: 230 });
+  ChartKit.divergingBars('c-drivers', { items: DEMO.DRIVERS });
+  ChartKit.groupedBars('c-grouped', { names: DEMO.SEGMENTS.map(s => s.name), series: [{ name: 'share of visits', values: DEMO.SEGMENTS.map(s => s.share) }, { name: 'booking rate', values: DEMO.SEGMENTS.map(s => s.value), color: '#0F172A' }] });
+  ChartKit.flowSankey('c-flow', { ...DEMO.flow(), onNodeClick: name => { document.getElementById('flow-click').textContent = 'Клик: ' + name + ' — в отчёте это открывает раздел про этот сегмент.'; } });
+  ChartKit.segmentMap('c-map', DEMO.map());
+  ChartKit.ladder('c-ladder', { steps: DEMO.LADDER });
+  ChartKit.heatTable('c-heat', DEMO.HEAT);
+
+  // ---- ported charts
+  ChartKit.penaltyRewardMap('c-penalty-reward-map', DEMO.penaltyRewardMap());
+  const host = document.getElementById('c-penalty-reward-map'), grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px';
+  host.parentNode.insertBefore(grid, host.nextSibling.nextSibling);
+  DEMO.penaltyRewardMapGroups().forEach(g => { const cell = document.createElement('div'); cell.innerHTML = '<div style="font-size:.86rem;font-weight:700;margin:0 0 2px">' + g.title + '</div><div style="height:230px"></div>'; grid.appendChild(cell); ChartKit.penaltyRewardMap(cell.lastChild, { ...g.opts, highlight: 'Pool or gym' }); });
+  ChartKit.contributionWaterfall('c-contribution-waterfall', DEMO.contributionWaterfall());
+  ChartKit.barWithDots('c-bar-with-dots', DEMO.barWithDots());
+  ChartKit.rankBump('c-rank-bump', DEMO.rankBump());
+  ChartKit.dumbbell('c-dumbbell', DEMO.dumbbell());
+  ChartKit.forestPlot('c-forest-plot', DEMO.forestPlot());
+  ChartKit.clusteredHeatmap('c-clustered-heatmap', DEMO.clusteredHeatmap());
+  ChartKit.networkGraph('c-network-graph', DEMO.networkGraph());
+  ChartKit.riskMap('c-risk-map', DEMO.riskMap());
+  ChartKit.eventDensity('c-event-density', DEMO.eventDensity());
+  ChartKit.stateButterfly('c-state-butterfly', DEMO.stateButterfly());
+  ChartKit.segmentationPanel('c-segmentation-panel', DEMO.segmentationPanel());
+  ChartKit.sessionAnatomy('c-session-anatomy', DEMO.sessionAnatomy());
+  window.TG = ChartKit.transitionGraph('c-transition-graph', DEMO.transitionGraph());
+  window.SM = ChartKit.semanticMap('c-semantic-map', { ...DEMO.semanticMap(), onClick: (p, l) => console.log(p || l) });
+  ChartKit.coverageChart('c-coverage-chart', { ...DEMO.coverageChart(), onClick: item => console.log(item) });
+
+  // ---- feedback
+  const KEY = 'chart-gallery-review', REPO = 'https://github.com/Uwolfson/chart-gallery';
+  const LABEL = { like: 'Нравится', dislike: 'Не нравится', rework: 'Доработать' };
+  let state; try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { state = {}; }
+  state.charts = state.charts || {};
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} refresh(); };
+  const who = document.getElementById('who'); who.value = state.who || ''; who.addEventListener('input', () => { state.who = who.value; save(); });
+
+  document.querySelectorAll('.fb').forEach(box => {
+    const id = box.dataset.chart, cur = state.charts[id] || {};
+    box.innerHTML = '<div class="fb__row"><span>Ваша оценка:</span>' +
+      ['like', 'dislike', 'rework'].map(v => '<button type="button" data-v="' + v + '">' + (v === 'like' ? '👍 ' : v === 'dislike' ? '👎 ' : '✏️ ') + LABEL[v] + '</button>').join('') +
+      '<button type="button" data-v="note" title="Комментарий к любой оценке">💬 Комментарий</button></div>' +
+      '<textarea placeholder="Что доработать или что думаете про этот график"></textarea>' +
+      '<p class="fb__hint">Сохраняется в этом браузере. Внизу страницы — кнопка «Скопировать отзыв».</p>';
+    const ta = box.querySelector('textarea'); ta.value = cur.text || '';
+    const paint = () => { box.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === (state.charts[id] || {}).verdict)); if ((state.charts[id] || {}).verdict === 'rework' || ta.value) ta.classList.add('show'); };
+    box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      const v = b.dataset.v;
+      if (v === 'note') { ta.classList.toggle('show'); if (ta.classList.contains('show')) ta.focus(); return; }
+      const s = state.charts[id] || {}; s.verdict = s.verdict === v ? null : v; s.title = box.dataset.title; s.at = new Date().toISOString(); state.charts[id] = s; save(); paint();
+      if (s.verdict === 'rework') { ta.classList.add('show'); ta.focus(); }
+    }));
+    ta.addEventListener('input', () => { const s = state.charts[id] || {}; s.text = ta.value; s.title = box.dataset.title; s.at = new Date().toISOString(); state.charts[id] = s; save(); });
+    paint();
+  });
+
+  function rated() { return Object.keys(state.charts).filter(k => state.charts[k].verdict || (state.charts[k].text || '').trim()); }
+  function report() {
+    const lines = ['Отзыв о галерее графиков' + (state.who ? ' — ' + state.who : ''), new Date().toLocaleString('ru-RU'), ''];
+    document.querySelectorAll('.fb').forEach(box => {
+      const s = state.charts[box.dataset.chart]; if (!s || (!s.verdict && !(s.text || '').trim())) return;
+      lines.push('• ' + box.dataset.title + ': ' + (s.verdict ? LABEL[s.verdict] : 'без оценки') + ((s.text || '').trim() ? ' — ' + s.text.trim() : ''));
+    });
+    if (lines.length === 3) lines.push('(пока ни одной оценки)');
+    return lines.join('\n');
+  }
+  function refresh() {
+    const n = rated().length; document.getElementById('count').textContent = 'Оценено ' + n + ' из ' + document.querySelectorAll('.fb').length;
+    document.querySelectorAll('nav a').forEach(a => a.classList.toggle('done', rated().includes(a.dataset.nav)));
+    const body = report(); document.getElementById('issue').href = REPO + '/issues/new?title=' + encodeURIComponent('Отзыв о графиках' + (state.who ? ' — ' + state.who : '')) + '&body=' + encodeURIComponent(body);
+  }
+  const toast = m => { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); };
+  document.getElementById('copy').addEventListener('click', async () => {
+    const txt = report();
+    try { await navigator.clipboard.writeText(txt); toast('Отзыв скопирован — вставьте его в чат'); }
+    catch (e) { window.prompt('Скопируйте текст:', txt); }
+  });
+  document.getElementById('dl').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ who: state.who || '', at: new Date().toISOString(), charts: state.charts, text: report() }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chart-review' + (state.who ? '-' + state.who.replace(/\s+/g, '_') : '') + '.json'; a.click(); URL.revokeObjectURL(a.href);
+  });
+  document.getElementById('reset').addEventListener('click', () => { if (confirm('Стереть все оценки на этой странице?')) { state = { who: state.who, charts: {} }; save(); location.reload(); } });
+  refresh();
+</script>
+</body></html>

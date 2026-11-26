@@ -1,0 +1,16 @@
+penalty-reward-map
+contribution-waterfall
+bar-with-dots
+rank-bump
+dumbbell
+forest-plot
+clustered-heatmap
+network-graph
+risk-map
+event-density
+state-butterfly
+segmentation-panel
+session-anatomy
+transition-graph
+semantic-map
+coverage-chart

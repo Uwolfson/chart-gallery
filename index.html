@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chart gallery</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<link rel="stylesheet" href="lib/charts.css">
+<style>
+* { box-sizing: border-box; } html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ck-bg); color: var(--ck-text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+header { padding: 36px 0 10px; } h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.1; margin: 0 0 10px; font-weight: 800; text-wrap: balance; }
+.sub { color: var(--ck-muted); max-width: 72ch; margin: 0 0 6px; }
+nav { position: sticky; top: 0; z-index: 5; background: var(--ck-bg); border-bottom: 1px solid var(--ck-line); }
+nav .wrap { display: flex; flex-wrap: wrap; gap: 4px 16px; padding-top: 10px; padding-bottom: 10px; }
+nav a { color: var(--ck-muted); text-decoration: none; font-size: .86rem; font-weight: 500; white-space: nowrap; } nav a:hover { color: var(--ck-accent); }
+section { padding: 38px 0 26px; border-top: 1px solid var(--ck-line); scroll-margin-top: 50px; }
+h2 { font-size: 1.35rem; margin: 0 0 4px; font-weight: 800; } .fn { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--ck-accent); font-size: .9rem; }
+.use { color: var(--ck-muted); max-width: 78ch; margin: 6px 0 14px; }
+.chart { width: 100%; }
+pre { background: var(--ck-surface); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: .8rem; line-height: 1.45; margin: 14px 0 0; }
+details summary { cursor: pointer; color: var(--ck-muted); font-size: .86rem; margin-top: 12px; }
+footer { border-top: 1px solid var(--ck-line); padding: 22px 0 60px; color: var(--ck-muted); font-size: .85rem; }
+</style></head><body>
+<header><div class="wrap">
+  <h1>Chart gallery</h1>
+  <p class="sub">Twenty-six reusable chart recipes for survey and behavioural analysis: what moves a metric and which attributes matter, how rule-based segments split, what a segment does over time, where people flow, where sessions are lost. One small library on top of Apache ECharts — no framework, no build step.</p>
+  <p class="sub" style="font-size:.88rem">All numbers on this page are synthetic demo data in three invented settings: a travel booking site, a survey of hotel guests and a language-learning app.</p>
+</div></header>
+<nav><div class="wrap">
+  <a href="#timeline">State timeline</a><a href="#stack">State stack</a><a href="#sequence">Sequence index</a><a href="#tree">Segment tree</a><a href="#drivers">Diverging bars</a><a href="#grouped">Grouped bars</a>
+  <a href="#flow">Flow sankey</a><a href="#map">Segment map</a><a href="#ladder">Ladder</a><a href="#heat">Heat table</a>
+
+  <a href="#penalty-reward-map">Penalty–reward map</a><a href="#contribution-waterfall">Contribution waterfall</a><a href="#bar-with-dots">Bar with dots</a><a href="#rank-bump">Rank bump</a><a href="#dumbbell">Dumbbell</a><a href="#forest-plot">Forest plot</a><a href="#clustered-heatmap">Clustered heatmap</a><a href="#network-graph">Network graph</a><a href="#risk-map">Risk map</a><a href="#event-density">Event density</a><a href="#state-butterfly">State butterfly</a><a href="#segmentation-panel">Segmentation panel</a><a href="#session-anatomy">Session anatomy</a><a href="#transition-graph">Transition graph</a><a href="#semantic-map">Semantic map</a><a href="#coverage-chart">Coverage chart</a>
+</div></nav>
+<main class="wrap">
+
+<section id="timeline"><h2>State timeline</h2><div class="fn">ChartKit.stateTimeline(el, opts)</div>
+  <p class="use">Use it to show what a segment <em>means</em>: one small panel per segment, a 100% bar for every time mark, colour = where people are at that moment. Panels are sorted by the outcome; the subtitle shows the outcome and the segment size.</p>
+  <div class="chart" id="c-timeline" style="height:580px"></div>
+  <details><summary>Code</summary><pre>ChartKit.stateTimeline('c-timeline', {
+  segments: [{ name: 'Searches by dates first', share: 25, value: 39 }, ...],   // value = outcome, optional
+  marks: [0, 10, 20, ..., 120], states: ['home', 'search form', ...],
+  data: { 'Searches by dates first': { home: [100, 38, ...], 'search form': [0, 54, ...] }, ... },  // % per mark, sums to 100
+  colors: { home: '#0F172A', ... }, base: 27, valueLabel: 'booking rate', shareLabel: 'of visits'
+});</pre></details></section>
+
+<section id="stack"><h2>State stack</h2><div class="fn">ChartKit.stateStack(el, opts)</div>
+  <p class="use">Use it to show where everyone is at each moment: a 100% stacked area, one layer per state, counted among the sessions that are still going on. Thin layers are hard to read in a stack, so <b>click a layer or a chip to isolate that state</b> — it is redrawn alone from the baseline with value labels; click the chart again to bring all states back. Marks where the base is too small are dimmed.</p>
+  <div class="chart" id="c-stack" style="height:480px"></div>
+  <p class="use" id="stack-note" style="margin-top:8px"></p>
+  <details><summary>Code</summary><pre>const stack = ChartKit.stateStack('c-stack', {
+  labels: ['0', '1 s', '2 s', ..., '30 min'], states: ['home', 'search form', ...],          // states: bottom to top
+  data: { home: [100, 99, ...], 'search form': [0, 1, ...], ... },                      // % per mark; normalize: true rescales to 100
+  colors: { home: '#334155', ... },
+  base: [5000, 4980, ...], minBase: 700, lowBaseLabel: 'small base', baseLabel: 'sessions still going on:',
+  onIsolate: state => console.log(state)                                                 // chips: 'my-chips' puts the buttons elsewhere
+});
+stack.isolate('search form');   // same as a click on the layer; stack.isolate(null) goes back; stack.dispose() removes it</pre></details></section>
+
+<section id="sequence"><h2>Sequence index</h2><div class="fn">ChartKit.sequenceIndex(el, opts)</div>
+  <p class="use">Use it next to an aggregate chart to show the individual paths behind it: every thin strip is one session from its start to its end, colour = where the person is at that moment. Strips are grouped by outcome and sorted by duration inside a group; a red tick marks the key event. A logarithmic time axis keeps both the first seconds and the long tail readable. Hover a strip for details.</p>
+  <div class="ck-chips" id="seq-scale"><button type="button" class="ck-chip ck-chip--on" data-scale="log">log scale, whole session</button><button type="button" class="ck-chip" data-scale="linear">linear scale, first 10 minutes</button></div>
+  <div id="c-sequence"></div>
+  <details><summary>Code</summary><pre>const seq = ChartKit.sequenceIndex('c-sequence', {
+  rows: [{ group: 'booked', end: 271, mark: 240, segments: [[0, 33, 0], [33, 60, 1], ...] }, ...],   // [from, to, index in states], seconds
+  states: ['home', 'search form', ...], colors: { home: '#334155', ... },
+  groups: [{ key: 'no booking', label: 'did not book' }, { key: 'booked', label: 'booked' }],
+  markLabel: 'booking', scale: 'log'
+});
+seq.redraw({ scale: 'linear', maxTime: 600 });   // switch the time axis</pre></details></section>
+
+<section id="tree"><h2>Segment tree</h2><div class="fn">ChartKit.segmentTree(el, opts)</div>
+  <p class="use">Use it for segments defined by rules (a decision tree on the variables that drive the metric). Every condition is written once, on its own split; every node — including the intermediate ones — shows its size and its value. Node size = share, colour = above or below the overall value.</p>
+  <div class="chart" id="c-tree" style="height:640px"></div>
+  <details><summary>Code</summary><pre>ChartKit.segmentTree('c-tree', {
+  tree: { name: 'All visits', share: 100, value: 27, children: [
+    { name: 'Came from a price alert', share: 5, value: 61 },
+    { name: 'Booked here before', share: 24, value: 41, children: [...] } ] },
+  base: 27, valueLabel: 'booking rate', shareLabel: 'of visits'
+});
+// python/tree_segments.py turns a fitted sklearn tree into this nested structure</pre></details></section>
+
+<section id="drivers"><h2>Diverging bars</h2><div class="fn">ChartKit.divergingBars(el, opts)</div>
+  <p class="use">Use it as the first chart of a step: what moves the metric up and what moves it down. Each bar is the difference in the metric with and without a factor, in percentage points; the label gives both values.</p>
+  <div class="chart" id="c-drivers" style="height:300px"></div>
+  <details><summary>Code</summary><pre>ChartKit.divergingBars('c-drivers', {
+  items: [{ name: 'Booked here before', withValue: 41, withoutValue: 23, share: 24 }, ...]
+});</pre></details></section>
+
+<section id="grouped"><h2>Grouped bars</h2><div class="fn">ChartKit.groupedBars(el, opts)</div>
+  <p class="use">Use it whenever two or three numbers per category have to be compared: put them side by side on one scale instead of separate panels.</p>
+  <div class="chart" id="c-grouped" style="height:440px"></div>
+  <details><summary>Code</summary><pre>ChartKit.groupedBars('c-grouped', {
+  names: ['Searches by dates first', ...],
+  series: [{ name: 'share of visits', values: [...] }, { name: 'booking rate', values: [...] }]
+});</pre></details></section>
+
+<section id="flow"><h2>Flow sankey</h2><div class="fn">ChartKit.flowSankey(el, opts)</div>
+  <p class="use">Use it to connect three groupings: where a visit starts, what happens, how it ends. Nodes are reordered to reduce crossings (barycenter method), similar nodes share a colour family across columns, and clicking a node can navigate to the place where that segment is explained.</p>
+  <div class="chart" id="c-flow" style="height:640px"></div>
+  <p class="use" id="flow-click" style="margin-top:8px">Click a node.</p>
+  <details><summary>Code</summary><pre>ChartKit.flowSankey('c-flow', {
+  columns: [['Searches by dates first', ...], ['compared in the results list', ...], ['Decisive booker', ...]],
+  links: [{ source: 'Searches by dates first', target: 'compared in the results list', value: 661 }, ...],
+  colors: { 'Searches by dates first': '#2563EB', ... }, pinLast: ['Saved nothing'],
+  onNodeClick: name => location.hash = '#' + slug(name)
+});</pre></details></section>
+
+<section id="map"><h2>Segment map</h2><div class="fn">ChartKit.segmentMap(el, opts)</div>
+  <p class="use">Use it to put every segment on one picture: x = how big, y = how good. Labels are placed automatically so they do not overlap; a leader line is drawn when a label had to move away from its point.</p>
+  <div class="chart" id="c-map" style="height:560px"></div>
+  <details><summary>Code</summary><pre>ChartKit.segmentMap('c-map', {
+  points: [{ name: 'Searches by dates first', x: 25, y: 39, group: 'first two minutes', color: '#2563EB' }, ...],
+  xName: 'share of all visits, %', yName: 'booking rate, %',
+  reference: { y: 27, label: 'average 27%' }, symbols: { 'first two minutes': 'circle', style: 'rect' }
+});</pre></details></section>
+
+<section id="ladder"><h2>Ladder</h2><div class="fn">ChartKit.ladder(el, opts)</div>
+  <p class="use">Use it as the spine of a report: "of 100 who started, N reached each step", with the loss and its reason written next to every rung. Rungs can link to the section that explains them.</p>
+  <div id="c-ladder"></div>
+  <details><summary>Code</summary><pre>ChartKit.ladder('c-ladder', { steps: [
+  { name: 'Opened the site', value: 100 },
+  { name: 'Ran a search', value: 64, loss: 'left from the home page', href: '#step-1' }, ... ] });</pre></details></section>
+
+<section id="heat"><h2>Heat table</h2><div class="fn">ChartKit.heatTable(el, opts)</div>
+  <p class="use">Use it to describe segments by variables. A cell is shaded only when it differs noticeably from the overall value (at least 3 points and 15% relative), so the eye goes to real differences.</p>
+  <div id="c-heat"></div>
+  <details><summary>Code</summary><pre>ChartKit.heatTable('c-heat', {
+  rows: ['Booked here before', ...], columns: [{ name: 'Goes straight to booking', sub: '6% of visits' }, ...],
+  values: { 'Booked here before': [52, 61, ...] }, overall: { 'Booked here before': 24 }
+});</pre></details></section>
+
+<section id="penalty-reward-map"><h2>Penalty–reward map</h2><div class="fn">ChartKit.penaltyRewardMap(el, opts)</div>
+  <p class="use">Use it to show what an attribute does to a choice from both sides: x = penalty (how much a badly delivered attribute pushes people away, in percentage points), y = reward (how much a well delivered one pulls them in). Dashed lines at the two means split four zones — attract (high reward, low penalty), key (both high), basic (high penalty, low reward), secondary — and the point colour is the zone. Tick the option to see the ± confidence crosshair behind each point; labels are moved apart automatically with leader lines; a zone table is rendered under the chart. Call the function several times with `highlight` and `compact` to get small multiples per group on a shared scale.</p>
+  <div class="chart" id="c-penalty-reward-map" style="height:520px"></div>
+  <details><summary>Code</summary><pre>ChartKit.penaltyRewardMap(&#x27;c-penalty-reward-map&#x27;, {
+  points: [{ name: &#x27;Value for money&#x27;, x: 8.5, y: 12.4, xCi: 2.3, yCi: 1.3 }, ...],   // x = penalty, y = reward, pp; ± optional
+  xName: &#x27;penalty, pp&#x27;, yName: &#x27;reward, pp&#x27;, unit: &#x27;pp&#x27;,
+  zones: { topLeft: &#x27;attract&#x27;, topRight: &#x27;key&#x27;, bottomRight: &#x27;basic&#x27;, bottomLeft: &#x27;secondary&#x27; },
+  ci: true, table: true                       // table: an element / id, or true = a div right after the chart
+});
+// small multiples: the same call per group with compact: true, highlight: &#x27;Pool or gym&#x27;, xRange: [-1, 17], yRange: [-1, 16]</pre></details>
+</section>
+
+<section id="contribution-waterfall"><h2>Contribution waterfall</h2><div class="fn">ChartKit.contributionWaterfall(el, opts)</div>
+  <p class="use">Use it to explain a gap: how a group gets from a reference value (the average hotel) to its own value, one horizontal step per factor. Steps are sorted by absolute size, blue raises the value and orange lowers it; a dashed bar sums all factors together and a grey bar holds the residual the factors do not explain. The start and end bars stand on zero, every step starts where the previous one ended (a transparent base stack). Hover a row for the value and its ± error.</p>
+  <div class="chart" id="c-contribution-waterfall" style="height:480px"></div>
+  <details><summary>Code</summary><pre>ChartKit.contributionWaterfall(&#x27;c-contribution-waterfall&#x27;, {
+  start: { label: &#x27;Average hotel&#x27;, value: 54.0 }, end: { label: &#x27;Hotel D, actual&#x27;, value: 62.1 },
+  steps: [{ name: &#x27;Location&#x27;, value: 3.8, ci: 1.0 }, { name: &#x27;Noise insulation&#x27;, value: -2.2, ci: 0.9 }, ...],   // pp, sorted by |value|
+  unit: &#x27;%&#x27;, stepUnit: &#x27;pp&#x27;, summaryLabel: &#x27;All attributes together&#x27;, residualLabel: &#x27;Not explained by attributes&#x27;
+});</pre></details>
+</section>
+
+<section id="bar-with-dots"><h2>Bar with dots</h2><div class="fn">ChartKit.barWithDots(el, opts)</div>
+  <p class="use">Use it when one number per item has to be shown together with its stability: the bar is the effect on the full base (blue raises the outcome, orange lowers it; one colour when the measure is unsigned), the dots are the same measure in each wave, light to dark. With `ci: true` a whisker shows the ± confidence interval across the bar; it is always in the tooltip. Items are sorted by absolute effect, largest on top.</p>
+  <div class="chart" id="c-bar-with-dots" style="height:520px"></div>
+  <details><summary>Code</summary><pre>ChartKit.barWithDots(&#x27;c-bar-with-dots&#x27;, {
+  items: [{ name: &#x27;Room cleanliness&#x27;, value: 8.7, ci: 1.18, waves: [8.5, 8.2, 8.5] }, ...],   // value on the full base, one entry per wave
+  waveNames: [&#x27;wave 1&#x27;, &#x27;wave 2&#x27;, &#x27;wave 3&#x27;], unit: &#x27; pp&#x27;, signed: true, ci: true, baseLabel: &#x27;all waves&#x27;
+});
+// an unsigned score from an older method: { ..., signed: false, reference: &#x27;#7C3AED&#x27;, unit: &#x27;%&#x27; }</pre></details>
+</section>
+
+<section id="rank-bump"><h2>Rank bump</h2><div class="fn">ChartKit.rankBump(el, opts)</div>
+  <p class="use">Use it to show whether the order of items holds from wave to wave: y = rank (1 on top), one line per item across the waves. Lines that moved by `minMove` places or more (default 5) between any two waves are coloured, the rest stay grey, so the eye goes to real movement; the end label carries the net change, e.g. 'Breakfast quality (−7)'. Hover a line to focus it and read every rank.</p>
+  <div class="chart" id="c-rank-bump" style="height:460px"></div>
+  <details><summary>Code</summary><pre>ChartKit.rankBump(&#x27;c-rank-bump&#x27;, {
+  waves: [&#x27;wave 1&#x27;, &#x27;wave 2&#x27;, &#x27;wave 3&#x27;],
+  items: [{ name: &#x27;Room cleanliness&#x27;, values: [14.3, 15.56, 16.47] }, ...],   // or ranks: [1, 1, 2] directly
+  minMove: 5, color: &#x27;#7C3AED&#x27;
+});</pre></details>
+</section>
+
+<section id="dumbbell"><h2>Dumbbell</h2><div class="fn">ChartKit.dumbbell(el, opts)</div>
+  <p class="use">Use it when every row has two values of the same measure to compare — before and after, in the first search and in the last, users and non-users. The two dots are the values, the thick line between them is coloured by direction (blue when the second value is higher, orange when lower), the labels at both ends give the numbers, and a short vertical dash marks a base (the overall value) per row or for the whole chart. Rows where the difference is not significant are passed with dim: true and drawn faded. Hover a row for both values, the difference and the base.</p>
+  <div class="chart" id="c-dumbbell" style="height:480px"></div>
+  <details><summary>Code</summary><pre>ChartKit.dumbbell(&#x27;c-dumbbell&#x27;, {
+  rows: [{ name: &#x27;Price range&#x27;, a: 52, b: 38, reference: 44 }, { name: &#x27;Pool&#x27;, a: 11, b: 10, reference: 10, dim: true }, ...],
+  aLabel: &#x27;in the first search&#x27;, bLabel: &#x27;in the last search before booking&#x27;, referenceLabel: &#x27;in all searches&#x27;,
+  format: v =&gt; Math.round(v) + &#x27;%&#x27;, min: 0            // reference: 44 (one base for all rows) or [refA, refB] per row
+});</pre></details>
+</section>
+
+<section id="forest-plot"><h2>Forest plot</h2><div class="fn">ChartKit.forestPlot(el, opts)</div>
+  <p class="use">Use it to show what a model says each factor does on its own, holding the rest constant: one row per coefficient, a point at the estimate and a whisker for the 95% interval, sorted so the largest effect is on top. The reference line is 0 for differences in percentage points, or 1 for ratios (scale: 'ratio', multipliers on a log axis). Significant rows (p below alpha, or an interval that misses the reference) get a coloured point — blue above the reference, orange below — a dark whisker and a bold label such as "+3.2 pp [1.1; 5.3]"; the rest are grey. Hover a row for the numbers and the p-value.</p>
+  <div class="chart" id="c-forest-plot" style="height:480px"></div>
+  <details><summary>Code</summary><pre>ChartKit.forestPlot(&#x27;c-forest-plot&#x27;, {
+  rows: [{ name: &#x27;Studies daily&#x27;, est: 21.3, lo: 15.6, hi: 27.0 }, { name: &#x27;Aged under 35&#x27;, est: -1.1, lo: -4.6, hi: 2.4, p: 0.54 }, ...],
+  unit: &#x27;pp&#x27;, xName: &#x27;change in the chance of finishing the course, pp&#x27;
+});
+ChartKit.forestPlot(&#x27;c-forest-plot-ratio&#x27;, { rows: [{ name, est: 1.71, lo: 1.38, hi: 2.12 }, ...], scale: &#x27;ratio&#x27;, nsLabel: &#x27;(n.s.)&#x27; });</pre></details>
+</section>
+
+<section id="clustered-heatmap"><h2>Clustered heatmap</h2><div class="fn">ChartKit.clusteredHeatmap(el, opts)</div>
+  <p class="use">Use it to see which groups resemble each other in a profile of many variables — hotel types by the attributes their guests value, segments by the behaviours they show. Rows are variables, columns are groups; a cell is shaded by how far the group is from the overall value of that row (blue above, orange below, deeper = larger), or by the signed value itself when no overall is given. Rows and columns are reordered by Ward clustering and the dendrograms are drawn next to the map (rows to the right, columns below), so similar groups stand side by side. With orderBy: 'City hotel' the columns are instead sorted by their Euclidean distance to that column, the distance is written in the header and the column tree is omitted. Hover a cell for the value and the overall.</p>
+  <div class="chart" id="c-clustered-heatmap" style="height:520px"></div>
+  <details><summary>Code</summary><pre>ChartKit.clusteredHeatmap(&#x27;c-clustered-heatmap&#x27;, {
+  rows: [&#x27;Room cleanliness&#x27;, &#x27;Value for money&#x27;, ...], columns: [&#x27;City hotel&#x27;, &#x27;Resort&#x27;, ...],
+  values: [[71, 70, ...], [54, 49, ...], ...],      // one array per row, one number per column
+  overall: [71, 58, ...],                            // cell = value − overall; omit to shade the signed values themselves
+  cluster: { rows: true, cols: true }, unit: &#x27;pp&#x27;    // or orderBy: &#x27;City hotel&#x27; to sort columns by distance to one column
+});</pre></details>
+</section>
+
+<section id="network-graph"><h2>Network graph</h2><div class="fn">ChartKit.networkGraph(el, opts)</div>
+  <p class="use">Use it to show a fitted network of binary behaviours — a Bayesian network, a path model — in the "Tetrad + Gephi" style: every node is a behaviour, its size is the share of people who show it (6 + 34·sqrt(share / max)), its colour is the community found by a greedy modularity pass (or passed per node), and the label reads "Name N%". Every edge is a model coefficient: width = 1 + 9·|coef| / max, colour = the source node at 85% opacity, curved with an arrow, labelled ".23". The default layout is a deterministic Fruchterman–Reingold force layout; with layout: 'columns' the nodes are placed in the columns given by node.column (a "path to the target" view), ordered inside each column by the barycentre of their predecessors, with captions above the columns, a ring on the target node and its incoming edges drawn in the text colour. Hover a node or an edge for the numbers; drag to pan, wheel to zoom.</p>
+  <div class="chart" id="c-network-graph" style="height:560px"></div>
+  <details><summary>Code</summary><pre>ChartKit.networkGraph(&#x27;c-network-graph&#x27;, {
+  nodes: [{ name: &#x27;Signed in&#x27;, prevalence: 38, column: 0 }, { name: &#x27;Compared rooms&#x27;, prevalence: 17, column: 2 }, { name: &#x27;Booked&#x27;, prevalence: 27, column: 3 }, ...],
+  edges: [{ source: &#x27;Compared rooms&#x27;, target: &#x27;Booked&#x27;, coef: 0.43 }, { source: &#x27;Entered dates&#x27;, target: &#x27;Browsed destinations&#x27;, coef: -0.22 }, ...],
+  target: &#x27;Booked&#x27;, layout: &#x27;force&#x27;                      // or layout: &#x27;columns&#x27;, columns: [&#x27;How the visit started&#x27;, &#x27;First actions&#x27;, &#x27;Engagement&#x27;, &#x27;Outcome&#x27;]
+});</pre></details>
+</section>
+
+<section id="risk-map"><h2>Risk map</h2><div class="fn">ChartKit.riskMap(el, opts)</div>
+  <p class="use">Use it to rank the things that go wrong on the way to an outcome: x = how common the event is (share of sessions, log scale), y = how often people leave without the outcome right after it. Bubble area = sessions lost that way, colour = stage, a hollow bubble = too few cases to trust, the whisker = 95% Wilson interval, the dashed line = the background rate after an ordinary action. Italic captions name the quadrants; the shaded zone is "common and at least twice the background". Hover a bubble for the counts.</p>
+  <div class="chart" id="c-risk-map" style="height:520px"></div>
+  <details><summary>Code</summary><pre>ChartKit.riskMap(&#x27;c-risk-map&#x27;, {
+  events: [{ name: &#x27;no rooms for these dates&#x27;, note: &#x27;sold out&#x27;, category: &#x27;search&#x27;, x: 6, n: 3600, k: 1440 }, ...],   // x = % of sessions, k = lost of n
+  background: 9.5, backgroundLabel: &#x27;background, ordinary action&#x27;, minN: 100,                                   // hollow bubble below minN
+  colors: { start: &#x27;#334155&#x27;, search: &#x27;#2563EB&#x27;, ... }, labelPositions: { &#x27;page crash&#x27;: &#x27;right&#x27; },
+  quadrants: { topLeft: &#x27;rare but deadly&#x27;, topRight: &#x27;mass killers&#x27;, bottomRight: &#x27;loud but harmless&#x27;, bottomLeft: &#x27;almost harmless&#x27; },
+  zone: { x: 5, factor: 2, label: &#x27;common and deadly&#x27; }, xName: &#x27;share of sessions (log) →&#x27;, yName: &#x27;↑ lost within a minute, %&#x27;
+});</pre></details>
+</section>
+
+<section id="event-density"><h2>Event density</h2><div class="fn">ChartKit.eventDensity(el, opts)</div>
+  <p class="use">Use it to show when things happen after a key moment (a booking, a sign-up, a first visit): one smoothed curve per channel on a log time axis with readable ticks (30 s, 1 min, ... 24 h, or days when the ticks are passed in). Each curve is a kernel density of log time scaled to peak 1, so shapes are compared, not volumes; the tooltip gives the cumulative share of each channel by the moment under the cursor. Dashed verticals mark milestones such as "reminder e-mail". Pass raw times (the density is computed in the browser) or precomputed curves.</p>
+  <div class="chart" id="c-event-density" style="height:420px"></div>
+  <details><summary>Code</summary><pre>ChartKit.eventDensity(&#x27;c-event-density&#x27;, {
+  channels: [{ name: &#x27;contact property (1250)&#x27;, color: &#x27;#2563EB&#x27;, times: [18, 6400, 2.5, ...] },      // minutes since the key moment
+             { name: &#x27;leave a review (2100)&#x27;, times: [...], area: true }, ...],                // or curve: [...] + cum: [...] aligned with grid
+  tMin: 0.5, tMax: 43200, ticks: [1, 5, 30, 60, 360, 1440, 4320, 10080, 43200],
+  milestones: [{ t: 1, label: &#x27;confirmation e-mail · 1 min&#x27; }, { t: 360, label: &#x27;reminder e-mail · 6 h&#x27; }],
+  xName: &#x27;time since booking&#x27;, cumLabel: &#x27;by this moment&#x27;
+});</pre></details>
+</section>
+
+<section id="state-butterfly"><h2>State butterfly</h2><div class="fn">ChartKit.stateButterfly(el, opts)</div>
+  <p class="use">Use it when the "gone" mass matters as much as the active one: a 100% stacked area over time mirrored around zero — states that mean left or paused grow upwards, active screens sit below the line, the y axis runs 0–100 both ways. Time marks (log or linear) are passed in as labels. Click a legend item to toggle that state; hover for the exact shares at a mark.</p>
+  <div class="chart" id="c-state-butterfly" style="height:460px"></div>
+  <details><summary>Code</summary><pre>ChartKit.stateButterfly(&#x27;c-state-butterfly&#x27;, {
+  labels: [&#x27;0&#x27;, &#x27;1 s&#x27;, &#x27;2 s&#x27;, ..., &#x27;2 h&#x27;], states: [&#x27;home&#x27;, &#x27;search form&#x27;, ..., &#x27;paused&#x27;, &#x27;left without booking&#x27;, &#x27;left with booking&#x27;],
+  up: [&#x27;paused&#x27;, &#x27;left without booking&#x27;, &#x27;left with booking&#x27;],                 // drawn above zero; the rest below
+  data: { home: [100, 99, ...], &#x27;left with booking&#x27;: [0, 0, ...], ... },         // % of ALL sessions per mark
+  colors: { home: &#x27;#334155&#x27;, ... }, yName: &#x27;← active on the site        left or paused →&#x27;
+});</pre></details>
+</section>
+
+<section id="segmentation-panel"><h2>Segmentation panel</h2><div class="fn">ChartKit.segmentationPanel(el, opts)</div>
+  <p class="use">Use it as the first table after a segmentation: one row per segment with its name, a share-of-base bar, the outcome bar with its value and a sparkline of the state timeline — a tiny 100% stacked column per time mark, colour = state. Rows are sorted by the outcome, the overall row stays on top, so the eye reads "who is big, who converts, what they do" in one pass. Hover a sparkline column for the share of a state at that mark. Plain HTML, sizes itself; needs lib/parts/segmentation-panel.css.</p>
+  <div id="c-segmentation-panel"></div>
+  <details><summary>Code</summary><pre>ChartKit.segmentationPanel(&#x27;c-segmentation-panel&#x27;, {
+  rows: [{ name: &#x27;Searches by dates first&#x27;, share: 25, value: 39, color: &#x27;#2563EB&#x27; }, ..., { name: &#x27;All visits&#x27;, share: 100, value: 27, overall: true }],
+  valueLabel: &#x27;booking rate&#x27;, shareLabel: &#x27;share of visits&#x27;,
+  mini: { marks: [0, 10, ..., 120], states: [&#x27;home&#x27;, &#x27;search form&#x27;, ...], colors: { home: &#x27;#0F172A&#x27;, ... },
+          data: { &#x27;Searches by dates first&#x27;: { home: [100, 38, ...], &#x27;search form&#x27;: [0, 54, ...] }, ... }, unit: &#x27;s&#x27;, label: &#x27;screen at&#x27; }   // optional sparkline
+});</pre></details>
+</section>
+
+<section id="session-anatomy"><h2>Session anatomy</h2><div class="fn">ChartKit.sessionAnatomy(el, opts)</div>
+  <p class="use">Use it to show one session as a story: a shared time axis (linear or log; pauses longer than `pauseAfter` are hatched and shortened), lanes = screens as coloured segments with a tick at every transition, a row of selection actions — what was added to a shortlist or a trip (numbered dot = new item, small dot = one more of an item, red cross = removed), a query row (diamond at the query start, red when nothing was found, a bar while the results stayed on screen), small diamonds where a card was opened, dashed highlight window, event pins and an optional step-line value track (balance, trip total) on top. Hover any mark for a native tooltip. Controls are the caller's job: `redraw({ scale: 'log' })`, `redraw({ compressPauses: false })`.</p>
+  <div id="c-session-anatomy"></div>
+  <details><summary>Code</summary><pre>const s = ChartKit.sessionAnatomy(&#x27;c-session-anatomy&#x27;, {
+  lanes: [&#x27;home&#x27;, &#x27;search form&#x27;, &#x27;results list&#x27;, &#x27;hotel page&#x27;, &#x27;room choice&#x27;, &#x27;booking form&#x27;],   // top to bottom
+  segments: [[0, 11, 0], [11, 38, 1], [38, 97, 2], ...],                       // [from s, to s, lane index]
+  end: 934, scale: &#x27;linear&#x27;, compressPauses: true, pauseAfter: 120,
+  adds: [{ t: 221, n: 1, name: &#x27;studio by the beach, 2 nights&#x27;, note: &#x27;from the room list&#x27; }, { t: 392, name: &#x27;old town guesthouse&#x27; }],   // no n = one more of an item
+  removes: [{ t: 790, name: &#x27;studio by the beach, 2 nights&#x27; }], cards: [{ t: 99, name: &#x27;guesthouse by the pier&#x27; }],
+  queries: [{ t: 13, text: &#x27;seaside town&#x27;, found: 86, until: 97 }, { t: 232, text: &#x27;old twon&#x27;, found: 0 }],
+  events: [{ t: 929, label: &#x27;booked 211.00&#x27;, color: &#x27;#059669&#x27; }], highlight: { from: 0, to: 120, label: &#x27;first two minutes&#x27; },
+  valueTrack: [{ t: 221, v: 234 }, ...], valueLabel: &#x27;trip total&#x27;,             // optional step line on top
+  words: { items: &#x27;stays in the trip&#x27;, queries: &#x27;destination searches&#x27;, added: &#x27;added stay&#x27;, plusOne: &#x27;one more night&#x27; }   // row captions and tooltip words
+});
+s.redraw({ scale: &#x27;log&#x27; });   // s.redraw({ compressPauses: false }); s.dispose()</pre></details>
+</section>
+
+<section id="transition-graph"><h2>Transition graph</h2><div class="fn">ChartKit.transitionGraph(el, opts)</div>
+  <p class="use">Use it to show where people go from each screen. Nodes sit where you put them (a fixed layout keeps the picture stable between groups), node size ~ square root of entries, the label gives entries, median dwell and the share of exits that end the session there; directed edges are coloured by source, width ~ square root of the count, labelled with the share of exits from the source, and hidden below `minShare`. Links to a target that is not a node count as terminal exits. `matrix: true` adds the full from → to table under the chart, shaded blue; with `links2` and `matrixMode: 'diff'` the table shows the difference between two groups in percentage points (blue = more in the first group, orange = less).</p>
+  <div class="chart" id="c-transition-graph" style="height:560px"></div>
+  <details><summary>Code</summary><pre>const tg = ChartKit.transitionGraph(&#x27;c-transition-graph&#x27;, {
+  nodes: [{ name: &#x27;home&#x27;, x: 80, y: 330, entries: 24000, dwell: 9, color: &#x27;#334155&#x27; }, { name: &#x27;search form&#x27;, x: 360, y: 110, entries: 17800, dwell: 24 }, ...],
+  links: [{ source: &#x27;home&#x27;, target: &#x27;search form&#x27;, count: 9347 }, { source: &#x27;booking form&#x27;, target: &#x27;left with booking&#x27;, count: 1988 }, ...],  // unknown target = exit
+  links2: [...same shape for a second group...], goodEnds: [&#x27;left with booking&#x27;],
+  minShare: 15, matrix: true, matrixMode: &#x27;links&#x27;   // &#x27;links2&#x27; | &#x27;diff&#x27; (links minus links2, pp)
+});
+tg.redraw({ links: BOOKED, minShare: 25 });   // chips / switches are the caller&#x27;s job; tg.dispose()</pre></details>
+</section>
+
+<section id="semantic-map"><h2>Semantic map</h2><div class="fn">ChartKit.semanticMap(el, opts)</div>
+  <p class="use">Use it to explore a 2-D embedding (t-SNE, UMAP) of texts or items: every point is one unit, coloured when it belongs to one of the top groups, grey when it belongs to another group, a ring when it has no group. A glow sits under the top groups. Zoom with the wheel after a click on the map (or with Ctrl), drag to pan, double click or use the + / − / reset buttons. Labels change with zoom: group names and their top words at low zoom, subgroups at mid zoom, small clusters at high zoom; label boxes avoid each other and point to their centroid with a leader line. Hover a point or a label for a tooltip; the group chips focus one group (hover = preview, click = pin). `onClick(point, label)` gets the point or the label that was clicked.</p>
+  <div id="c-semantic-map"></div>
+  <details><summary>Code</summary><pre>const map = ChartKit.semanticMap(&#x27;c-semantic-map&#x27;, {
+  points: [{ x: -3.2, y: 1.7, group: &#x27;price&#x27;, sub: &#x27;too expensive&#x27;, cluster: &#x27;too expensive / 1&#x27;, text: &#x27;...&#x27; }, ...],   // group: null = unlabelled
+  levels: [{ zoom: 1, field: &#x27;group&#x27; }, { zoom: 2.2, field: &#x27;sub&#x27; }, { zoom: 5, field: &#x27;cluster&#x27; }],
+  words: { group: { price: [&#x27;expensive&#x27;, &#x27;fee&#x27;, &#x27;deal&#x27;] }, sub: { &#x27;too expensive&#x27;: [&#x27;expensive&#x27;, &#x27;price&#x27;, &#x27;overpriced&#x27;] }, cluster: { ... } },
+  maxGroups: 8, colors: { price: &#x27;#F97316&#x27; },      // top groups get colours, the rest are grey
+  onClick: (point, label) =&gt; { ... }              // one of the two is set
+});
+map.focus(&#x27;price&#x27;); map.reset(); map.redraw({ points: NEW }); map.dispose();</pre></details>
+</section>
+
+<section id="coverage-chart"><h2>Coverage chart</h2><div class="fn">ChartKit.coverageChart(el, opts)</div>
+  <p class="use">Use it to show how far a set of items (tags, rules, features) reaches into the base and where adding more stops paying: one column per item in greedy order, grey = already covered by the items before it, blue = newly covered by this one, "+N" on top, the y axis in percent of the base. Columns after the last item that adds at least `minGain` of the base sit behind a dashed line — that is the plateau. Pass precomputed `{ items, covered, added }` or raw `sets: { item: [ids] }` and let the greedy order be computed. `onClick(item)` fires on a column or its label.</p>
+  <div class="chart" id="c-coverage-chart" style="height:440px"></div>
+  <details><summary>Code</summary><pre>ChartKit.coverageChart(&#x27;c-coverage-chart&#x27;, {
+  sets: { &#x27;general praise&#x27;: [1, 4, 9, ...], &#x27;price&#x27;: [4, 12, ...], ... },            // raw memberships: greedy order is computed here
+  total: 1500, minGain: 0.005,                                                       // or precomputed: items: [...], covered: [483, 671, ...], added: [483, 188, ...]
+  coveredLabel: &#x27;already covered by earlier tags&#x27;, addedLabel: &#x27;newly covered by this tag&#x27;,
+  onClick: item =&gt; console.log(item)
+});
+ChartKit.greedyCoverage(sets, total)   // -&gt; { items, covered, added, total } if you need the order alone</pre></details>
+</section>
+</main>
+<footer><div class="wrap">Charts: <code>lib/charts.js</code> · styles: <code>lib/charts.css</code> · demo data: <code>examples/demo-data.js</code> · helpers: <code>python/</code>. Requires Apache ECharts 5.</div></footer>
+<script src="lib/charts.js"></script>
+<script src="examples/demo-data.js"></script>
+<script>
+  ChartKit.stateTimeline('c-timeline', { ...DEMO.timeline(), valueLabel: 'booking rate', shareLabel: 'of visits' });
+  const SIM = DEMO.sessions();
+  ChartKit.stateStack('c-stack', { ...SIM.stack, lowBaseLabel: 'small base', baseLabel: 'sessions still going on:' });
+  document.getElementById('stack-note').textContent = SIM.n.toLocaleString('en-US') + ' simulated sessions; each mark counts only the sessions that have not ended yet. The pale zone on the right has fewer than ' + SIM.stack.minBase + ' sessions in the base — treat it as noise.';
+  const seq = ChartKit.sequenceIndex('c-sequence', { ...SIM.index, scale: 'log' });
+  document.querySelectorAll('#seq-scale button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#seq-scale button').forEach(x => x.classList.toggle('ck-chip--on', x === b));
+    seq.redraw(b.dataset.scale === 'log' ? { scale: 'log', maxTime: undefined } : { scale: 'linear', maxTime: 600 });
+  }));
+  ChartKit.segmentTree('c-tree', { tree: DEMO.TREE, base: 27, valueLabel: 'booking rate', shareLabel: 'of visits', left: 230 });
+  ChartKit.divergingBars('c-drivers', { items: DEMO.DRIVERS });
+  ChartKit.groupedBars('c-grouped', { names: DEMO.SEGMENTS.map(s => s.name), series: [{ name: 'share of visits', values: DEMO.SEGMENTS.map(s => s.share) }, { name: 'booking rate', values: DEMO.SEGMENTS.map(s => s.value), color: '#0F172A' }] });
+  ChartKit.flowSankey('c-flow', { ...DEMO.flow(), onNodeClick: name => { document.getElementById('flow-click').textContent = 'Clicked: ' + name + ' — in a report this opens the section about that segment.'; } });
+  ChartKit.segmentMap('c-map', DEMO.map());
+  ChartKit.ladder('c-ladder', { steps: DEMO.LADDER });
+  ChartKit.heatTable('c-heat', DEMO.HEAT);
+
+  // ---- ported charts
+  ChartKit.penaltyRewardMap('c-penalty-reward-map', DEMO.penaltyRewardMap());
+  const host = document.getElementById('c-penalty-reward-map'), grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px';
+  host.parentNode.insertBefore(grid, host.nextSibling.nextSibling);
+  DEMO.penaltyRewardMapGroups().forEach(g => { const cell = document.createElement('div'); cell.innerHTML = '<div style="font-size:.86rem;font-weight:700;margin:0 0 2px">' + g.title + '</div><div style="height:230px"></div>'; grid.appendChild(cell); ChartKit.penaltyRewardMap(cell.lastChild, { ...g.opts, highlight: 'Pool or gym' }); });
+  ChartKit.contributionWaterfall('c-contribution-waterfall', DEMO.contributionWaterfall());
+  ChartKit.barWithDots('c-bar-with-dots', DEMO.barWithDots());
+  ChartKit.rankBump('c-rank-bump', DEMO.rankBump());
+  ChartKit.dumbbell('c-dumbbell', DEMO.dumbbell());
+  ChartKit.forestPlot('c-forest-plot', DEMO.forestPlot());
+  ChartKit.clusteredHeatmap('c-clustered-heatmap', DEMO.clusteredHeatmap());
+  ChartKit.networkGraph('c-network-graph', DEMO.networkGraph());
+  ChartKit.riskMap('c-risk-map', DEMO.riskMap());
+  ChartKit.eventDensity('c-event-density', DEMO.eventDensity());
+  ChartKit.stateButterfly('c-state-butterfly', DEMO.stateButterfly());
+  ChartKit.segmentationPanel('c-segmentation-panel', DEMO.segmentationPanel());
+  ChartKit.sessionAnatomy('c-session-anatomy', DEMO.sessionAnatomy());
+  window.TG = ChartKit.transitionGraph('c-transition-graph', DEMO.transitionGraph());
+  window.SM = ChartKit.semanticMap('c-semantic-map', { ...DEMO.semanticMap(), onClick: (p, l) => console.log(p || l) });
+  ChartKit.coverageChart('c-coverage-chart', { ...DEMO.coverageChart(), onClick: item => console.log(item) });
+</script>
+</body></html>

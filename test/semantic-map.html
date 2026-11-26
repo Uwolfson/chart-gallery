@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>semanticMap — test</title>
+<script src="../dist/echarts.min.js"></script>
+<link rel="stylesheet" href="../lib/charts.css">
+<link rel="stylesheet" href="../lib/parts/semantic-map.css">
+<style>body { margin: 0; padding: 16px; background: var(--ck-bg); color: var(--ck-text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; } .wrap { max-width: 1100px; margin: 0 auto; } h2 { margin: 0 0 8px; } .fn { font-family: ui-monospace, Consolas, monospace; color: var(--ck-accent); font-size: .9rem; } #log { color: var(--ck-muted); font-size: .85rem; margin-top: 8px; }</style>
+</head><body><div class="wrap">
+<h2>Semantic map</h2><div class="fn">ChartKit.semanticMap(el, opts)</div>
+<div class="chart" id="c-semantic-map"></div>
+<p id="log">click a point or a label</p>
+<script src="../lib/charts.js"></script>
+<script src="../lib/parts/semantic-map.js"></script>
+<script src="../examples/demo-data.js"></script>
+<script src="../examples/parts/semantic-map.js"></script>
+<script>
+  window.SM = ChartKit.semanticMap('c-semantic-map', { ...DEMO.semanticMap(), onClick: (p, l) => { document.getElementById('log').textContent = p ? 'point: ' + (p.group || 'no group') + ' — ' + p.text : 'label: ' + l.field + ' = ' + l.value + ' (' + l.n + ' points)'; } });
+</script>
+</div></body></html>

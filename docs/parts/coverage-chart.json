@@ -1,0 +1,12 @@
+{
+  "id": "coverage-chart",
+  "fn": "coverageChart",
+  "height": 440,
+  "title_en": "Coverage chart",
+  "use_en": "Use it to show how far a set of items (tags, rules, features) reaches into the base and where adding more stops paying: one column per item in greedy order, grey = already covered by the items before it, blue = newly covered by this one, \"+N\" on top, the y axis in percent of the base. Columns after the last item that adds at least `minGain` of the base sit behind a dashed line — that is the plateau. Pass precomputed `{ items, covered, added }` or raw `sets: { item: [ids] }` and let the greedy order be computed. `onClick(item)` fires on a column or its label.",
+  "title_ru": "График покрытия",
+  "use_ru": "Покажите, какую часть базы покрывает набор элементов (тегов, правил, признаков) и где добавление новых перестаёт окупаться: столбец на элемент в жадном порядке, серое = уже покрыто предыдущими, синее = впервые покрыто этим, сверху «+N», ось y в процентах базы. Столбцы после последнего элемента, который добавляет хотя бы `minGain` базы, стоят за пунктиром — это плато. Передайте готовые `{ items, covered, added }` или сырые множества `sets: { item: [ids] }` — тогда жадный порядок считается здесь. `onClick(item)` срабатывает по столбцу или подписи.",
+  "init": "ChartKit.coverageChart('c-coverage-chart', { ...DEMO.coverageChart(), onClick: item => console.log(item) });",
+  "snippet": "ChartKit.coverageChart('c-coverage-chart', {\n  sets: { 'general praise': [1, 4, 9, ...], 'price': [4, 12, ...], ... },            // raw memberships: greedy order is computed here\n  total: 1500, minGain: 0.005,                                                       // or precomputed: items: [...], covered: [483, 671, ...], added: [483, 188, ...]\n  coveredLabel: 'already covered by earlier tags', addedLabel: 'newly covered by this tag',\n  onClick: item => console.log(item)\n});\nChartKit.greedyCoverage(sets, total)   // -> { items, covered, added, total } if you need the order alone",
+  "skill": "ChartKit.coverageChart(el, {\n  sets: { 'tag A': [1, 2, 3, 4, 5], 'tag B': [4, 5, 6, 7], 'tag C': [1, 8], 'tag D': [2, 3] },   // or items / covered / added\n  total: 10, minGain: 0.05,\n  coveredLabel: 'already covered', addedLabel: 'newly covered', onClick: item => console.log(item)\n});   // ECharts instance; container needs a height (~440px)"
+}

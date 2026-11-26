@@ -1,0 +1,4 @@
+/* chart-gallery part — transition graph: the optional matrix table reuses .ck-heat; only the separator column is added. Prefix ck-transition-graph-. */
+table.ck-transition-graph-matrix th.ck-transition-graph-sep, table.ck-transition-graph-matrix td.ck-transition-graph-sep { width: 10px; padding: 0; border-bottom: none; }
+table.ck-transition-graph-matrix td { min-width: 44px; }
+table.ck-transition-graph-matrix thead th { white-space: normal; max-width: 90px; }

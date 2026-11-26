@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>coverageChart — test</title>
+<script src="../dist/echarts.min.js"></script>
+<link rel="stylesheet" href="../lib/charts.css">
+<style>body { margin: 0; padding: 16px; background: var(--ck-bg); color: var(--ck-text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; } .wrap { max-width: 1100px; margin: 0 auto; } h2 { margin: 0 0 8px; } .fn { font-family: ui-monospace, Consolas, monospace; color: var(--ck-accent); font-size: .9rem; } #log { color: var(--ck-muted); font-size: .85rem; margin-top: 8px; }</style>
+</head><body><div class="wrap">
+<h2>Coverage chart</h2><div class="fn">ChartKit.coverageChart(el, opts)</div>
+<div class="chart" id="c-coverage-chart" style="height:440px"></div>
+<p id="log">click a column</p>
+<script src="../lib/charts.js"></script>
+<script src="../lib/parts/coverage-chart.js"></script>
+<script src="../examples/demo-data.js"></script>
+<script src="../examples/parts/coverage-chart.js"></script>
+<script>
+  ChartKit.coverageChart('c-coverage-chart', { ...DEMO.coverageChart(), onClick: item => { document.getElementById('log').textContent = 'clicked: ' + item; } });
+</script>
+</div></body></html>

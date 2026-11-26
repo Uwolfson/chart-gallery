@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sessionAnatomy — test</title>
+<script src="../dist/echarts.min.js"></script>
+<link rel="stylesheet" href="../lib/charts.css">
+<link rel="stylesheet" href="../lib/parts/session-anatomy.css">
+<style>body { margin: 0; padding: 16px; background: var(--ck-bg); color: var(--ck-text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; } .wrap { max-width: 1100px; margin: 0 auto; } h2 { margin: 0 0 8px; } .fn { font-family: ui-monospace, Consolas, monospace; color: var(--ck-accent); font-size: .9rem; }</style>
+</head><body><div class="wrap">
+<h2>Session anatomy</h2><div class="fn">ChartKit.sessionAnatomy(el, opts)</div>
+<div class="ck-chips" id="ctl">
+  <button type="button" class="ck-chip ck-chip--on" data-k="scale" data-v="linear">linear time</button><button type="button" class="ck-chip" data-k="scale" data-v="log">log time</button>
+  <button type="button" class="ck-chip ck-chip--on" data-k="compressPauses" data-v="true">pauses shortened</button><button type="button" class="ck-chip" data-k="compressPauses" data-v="false">real pauses</button>
+</div>
+<div class="chart" id="c-session-anatomy"></div>
+<script src="../lib/charts.js"></script>
+<script src="../lib/parts/session-anatomy.js"></script>
+<script src="../examples/demo-data.js"></script>
+<script src="../examples/parts/session-anatomy.js"></script>
+<script>
+  const s = ChartKit.sessionAnatomy('c-session-anatomy', DEMO.sessionAnatomy());
+  document.querySelectorAll('#ctl .ck-chip').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.k, v = b.dataset.v === 'true' ? true : b.dataset.v === 'false' ? false : b.dataset.v;
+    document.querySelectorAll('#ctl .ck-chip[data-k="' + k + '"]').forEach(x => x.classList.toggle('ck-chip--on', x === b));
+    s.redraw({ [k]: v });
+  }));
+</script>
+</div></body></html>

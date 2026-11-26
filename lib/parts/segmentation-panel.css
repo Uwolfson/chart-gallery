@@ -1,0 +1,17 @@
+/* chart-gallery part — styles for ChartKit.segmentationPanel (prefix ck-segpanel-). Theme colours come from lib/charts.css variables. */
+.ck-segpanel { color: var(--ck-text); font-size: .92rem; }
+.ck-segpanel-grid { display: grid; grid-template-columns: minmax(180px, 300px) 1fr 50px 1fr 50px; gap: 7px 10px; align-items: center; max-width: 1000px; }
+.ck-segpanel--mini .ck-segpanel-grid { grid-template-columns: minmax(180px, 300px) 1fr 50px 1fr 50px 260px; max-width: 1240px; }
+.ck-segpanel-h { font-size: .74rem; color: var(--ck-muted); font-weight: 600; align-self: end; }
+.ck-segpanel-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ck-segpanel-tot { font-weight: 800; }
+.ck-segpanel-bar { height: 14px; background: var(--ck-surface); border-radius: 4px; position: relative; overflow: hidden; }
+.ck-segpanel-bar i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.ck-segpanel-num { font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; }
+.ck-segpanel-mini svg { display: block; width: 100%; height: 34px; }
+.ck-segpanel-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--ck-muted); margin: 10px 0 0; }
+.ck-segpanel-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+@media (max-width: 720px) {
+  .ck-segpanel-grid, .ck-segpanel--mini .ck-segpanel-grid { grid-template-columns: 1fr 1fr 50px; }
+  .ck-segpanel-o { display: none; }
+}

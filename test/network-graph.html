@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>networkGraph test</title>
+<link rel="stylesheet" href="../lib/charts.css">
+<style>body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--ck-bg); color: var(--ck-text); margin: 0; padding: 16px; }
+  .c { width: 1100px; height: 560px; } h3 { font-size: 14px; color: var(--ck-muted); margin: 24px 0 8px; }</style>
+<script src="../dist/echarts.min.js"></script>
+<script src="../lib/charts.js"></script>
+<script src="../lib/parts/network-graph.js"></script>
+<script src="../examples/demo-data.js"></script>
+<script src="../examples/parts/network-graph.js"></script>
+</head><body>
+<div id="c-network-graph" class="c"></div>
+<h3>layout: columns</h3><div id="c-network-graph-columns" class="c" style="height:560px"></div>
+<script>
+ChartKit.networkGraph('c-network-graph', DEMO.networkGraph());
+ChartKit.networkGraph('c-network-graph-columns', DEMO.networkGraph('columns'));
+</script>
+</body></html>

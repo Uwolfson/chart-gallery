@@ -1,0 +1,12 @@
+{
+ "id": "event-density",
+ "fn": "eventDensity",
+ "height": 420,
+ "title_en": "Event density",
+ "use_en": "Use it to show when things happen after a key moment (a booking, a sign-up, a first visit): one smoothed curve per channel on a log time axis with readable ticks (30 s, 1 min, ... 24 h, or days when the ticks are passed in). Each curve is a kernel density of log time scaled to peak 1, so shapes are compared, not volumes; the tooltip gives the cumulative share of each channel by the moment under the cursor. Dashed verticals mark milestones such as \"reminder e-mail\". Pass raw times (the density is computed in the browser) or precomputed curves.",
+ "title_ru": "Плотность событий во времени",
+ "use_ru": "Показывает, когда что-то происходит после ключевого момента (бронирование, регистрация): по одной сглаженной кривой на канал на логарифмической оси времени с читаемыми делениями (30 с, 1 мин, … 24 ч или дни, если деления переданы). Кривая — ядерная плотность логарифма времени с пиком 1, поэтому сравниваются формы, а не объёмы; подсказка даёт накопленную долю канала к моменту под курсором. Пунктирные вертикали — вехи («письмо-напоминание»). Можно передать сырые времена (плотность считается в браузере) или готовые кривые.",
+ "init": "ChartKit.eventDensity('c-event-density', DEMO.eventDensity());",
+ "snippet": "ChartKit.eventDensity('c-event-density', {\n  channels: [{ name: 'contact property (1250)', color: '#2563EB', times: [18, 6400, 2.5, ...] },      // minutes since the key moment\n             { name: 'leave a review (2100)', times: [...], area: true }, ...],                // or curve: [...] + cum: [...] aligned with grid\n  tMin: 0.5, tMax: 43200, ticks: [1, 5, 30, 60, 360, 1440, 4320, 10080, 43200],\n  milestones: [{ t: 1, label: 'confirmation e-mail · 1 min' }, { t: 360, label: 'reminder e-mail · 6 h' }],\n  xName: 'time since booking', cumLabel: 'by this moment'\n});",
+ "skill": "ChartKit.eventDensity(el, {\n  channels: [{ name, times: [minutes], color?, area?: true }],\n  tMin: 0.5, tMax: 43200, milestones: [{ t: 360, label: 'reminder e-mail' }],\n  xName: 'time since booking'\n});"
+}

@@ -1,0 +1,89 @@
+/* chart-gallery — theme variables and minimal styles for the HTML parts: ladder, heat table, chips (state stack), legend and tooltip (sequence index). */
+:root { --ck-bg: #ffffff; --ck-surface: #F4F6F8; --ck-text: #0F172A; --ck-muted: #64748B; --ck-line: #E2E8F0; --ck-accent: #2563EB; --ck-loss: #F97316; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ck-bg: #0B1220; --ck-surface: #131C2E; --ck-text: #E5EAF2; --ck-muted: #94A3B8; --ck-line: #243146; } }
+:root[data-theme="dark"] { --ck-bg: #0B1220; --ck-surface: #131C2E; --ck-text: #E5EAF2; --ck-muted: #94A3B8; --ck-line: #243146; }
+
+.ck-ladder { display: grid; gap: 8px; }
+.ck-ladder__row { display: grid; grid-template-columns: 170px minmax(0, 1fr) minmax(0, 300px); gap: 12px; align-items: center; }
+.ck-ladder__name { color: var(--ck-text); font-weight: 700; text-decoration: none; font-size: .95rem; }
+a.ck-ladder__name:hover { color: var(--ck-accent); }
+.ck-ladder__bar { position: relative; height: 34px; background: var(--ck-surface); border-radius: 8px; overflow: hidden; }
+.ck-ladder__bar i { position: absolute; inset: 0 auto 0 0; background: var(--ck-accent); border-radius: 8px; }
+.ck-ladder__bar b { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.ck-ladder__loss { color: var(--ck-loss); font-size: .85rem; font-weight: 500; }
+@media (max-width: 720px) { .ck-ladder__row { grid-template-columns: 1fr; gap: 2px; } }
+
+.ck-tw { overflow-x: auto; }
+table.ck-heat { border-collapse: collapse; width: 100%; font-size: .86rem; font-variant-numeric: tabular-nums; color: var(--ck-text); }
+table.ck-heat th, table.ck-heat td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--ck-line); }
+table.ck-heat th:first-child, table.ck-heat td:first-child { text-align: left; }
+table.ck-heat tbody th { font-weight: 500; }
+table.ck-heat thead th { font-size: .78rem; color: var(--ck-muted); font-weight: 700; vertical-align: bottom; }
+table.ck-heat thead th small { display: block; font-weight: 400; }
+table.ck-heat td.ck-muted { color: var(--ck-muted); }
+
+.ck-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.ck-chip { font: inherit; font-size: .82rem; line-height: 1.4; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--ck-line); background: var(--ck-bg); color: var(--ck-text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.ck-chip:hover { border-color: var(--ck-muted); }
+.ck-chip i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.ck-chip--on, .ck-chip--on:hover { background: var(--ck-text); color: var(--ck-bg); border-color: var(--ck-text); }
+
+.ck-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .82rem; color: var(--ck-text); margin: 8px 0; }
+.ck-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ck-legend i { width: 12px; height: 10px; border-radius: 2px; display: inline-block; }
+.ck-legend i.ck-legend__mark { width: 4px; border-radius: 1px; }
+.ck-seq__plot { position: relative; }
+.ck-seq__plot canvas { display: block; }
+.ck-seq__tip { position: absolute; display: none; pointer-events: none; background: var(--ck-text); color: var(--ck-bg); font-size: .8rem; line-height: 1.4; padding: 5px 8px; border-radius: 6px; white-space: nowrap; z-index: 3; }
+
+/* part: segmentation-panel */
+/* chart-gallery part — styles for ChartKit.segmentationPanel (prefix ck-segpanel-). Theme colours come from lib/charts.css variables. */
+.ck-segpanel { color: var(--ck-text); font-size: .92rem; }
+.ck-segpanel-grid { display: grid; grid-template-columns: minmax(180px, 300px) 1fr 50px 1fr 50px; gap: 7px 10px; align-items: center; max-width: 1000px; }
+.ck-segpanel--mini .ck-segpanel-grid { grid-template-columns: minmax(180px, 300px) 1fr 50px 1fr 50px 260px; max-width: 1240px; }
+.ck-segpanel-h { font-size: .74rem; color: var(--ck-muted); font-weight: 600; align-self: end; }
+.ck-segpanel-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ck-segpanel-tot { font-weight: 800; }
+.ck-segpanel-bar { height: 14px; background: var(--ck-surface); border-radius: 4px; position: relative; overflow: hidden; }
+.ck-segpanel-bar i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.ck-segpanel-num { font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; }
+.ck-segpanel-mini svg { display: block; width: 100%; height: 34px; }
+.ck-segpanel-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--ck-muted); margin: 10px 0 0; }
+.ck-segpanel-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+@media (max-width: 720px) {
+  .ck-segpanel-grid, .ck-segpanel--mini .ck-segpanel-grid { grid-template-columns: 1fr 1fr 50px; }
+  .ck-segpanel-o { display: none; }
+}
+
+/* part: session-anatomy */
+/* chart-gallery part — session anatomy (hand-built SVG). Prefix ck-anatomy-. */
+.ck-anatomy { width: 100%; }
+.ck-anatomy svg { display: block; width: 100%; height: auto; font-family: inherit; }
+.ck-anatomy text { font-size: 11px; }
+.ck-anatomy-row { font-size: 11.5px; font-weight: 700; }
+.ck-anatomy-lane { font-size: 11.5px; }
+.ck-anatomy-small { font-size: 10px; }
+.ck-anatomy-q { font-size: 11px; }
+.ck-anatomy-n { font-size: 10px; font-weight: 700; }
+.ck-anatomy-x { font-size: 14px; font-weight: 800; }
+
+/* part: transition-graph */
+/* chart-gallery part — transition graph: the optional matrix table reuses .ck-heat; only the separator column is added. Prefix ck-transition-graph-. */
+table.ck-transition-graph-matrix th.ck-transition-graph-sep, table.ck-transition-graph-matrix td.ck-transition-graph-sep { width: 10px; padding: 0; border-bottom: none; }
+table.ck-transition-graph-matrix td { min-width: 44px; }
+table.ck-transition-graph-matrix thead th { white-space: normal; max-width: 90px; }
+
+/* part: semantic-map */
+/* chart-gallery part — semantic map (canvas). Prefix ck-semantic-map-. Chips reuse .ck-chips / .ck-chip from lib/charts.css. */
+.ck-semantic-map { width: 100%; }
+.ck-semantic-map-plot { position: relative; border: 1px solid var(--ck-line); border-radius: 10px; overflow: hidden; background: var(--ck-bg); }
+.ck-semantic-map-plot--active { border-color: var(--ck-muted); }
+.ck-semantic-map-plot canvas { display: block; width: 100%; touch-action: none; cursor: default; }
+.ck-semantic-map-plot canvas.ck-semantic-map-drag { cursor: grabbing; }
+.ck-semantic-map-tools { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.ck-semantic-map-tools button { font: inherit; font-size: 1rem; line-height: 1; width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--ck-line); background: var(--ck-bg); color: var(--ck-text); cursor: pointer; }
+.ck-semantic-map-tools button:hover { border-color: var(--ck-muted); }
+.ck-semantic-map-level { position: absolute; left: 10px; bottom: 8px; font-size: .78rem; color: var(--ck-muted); pointer-events: none; }
+.ck-semantic-map-hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); font-size: .8rem; padding: 4px 10px; border-radius: 999px; background: var(--ck-text); color: var(--ck-bg); opacity: 0; transition: opacity .2s; pointer-events: none; }
+.ck-semantic-map-hint--on { opacity: .92; }
+.ck-semantic-map-tip { position: absolute; display: none; pointer-events: none; max-width: 300px; background: var(--ck-text); color: var(--ck-bg); font-size: .8rem; line-height: 1.4; padding: 6px 9px; border-radius: 6px; z-index: 3; }

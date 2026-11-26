@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Penalty–reward map - test</title>
+<script src="../dist/echarts.min.js"></script>
+<link rel="stylesheet" href="../lib/charts.css">
+<script src="../lib/charts.js"></script>
+<script src="../lib/parts/penalty-reward-map.js"></script>
+<script src="../examples/demo-data.js"></script>
+<script src="../examples/parts/penalty-reward-map.js"></script>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px; background: var(--ck-bg); color: var(--ck-text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+h2 { font-size: 1.35rem; margin: 0 0 4px; font-weight: 800; } .fn { font-family: ui-monospace, Consolas, monospace; color: var(--ck-accent); font-size: .9rem; margin-bottom: 12px; }
+.chart { width: 100%; }
+</style></head><body>
+<h2>Penalty–reward map</h2><div class="fn">ChartKit.penaltyRewardMap(el, opts)</div>
+<div id="shot"><div class="chart" id="c-penalty-reward-map" style="height:520px"></div></div>
+<script>
+ChartKit.penaltyRewardMap('c-penalty-reward-map', DEMO.penaltyRewardMap());
+const host = document.getElementById('c-penalty-reward-map'), grid = document.createElement('div');
+grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px';
+host.parentNode.insertBefore(grid, host.nextSibling.nextSibling);
+DEMO.penaltyRewardMapGroups().forEach(g => { const cell = document.createElement('div'); cell.innerHTML = '<div style="font-size:.86rem;font-weight:700;margin:0 0 2px">' + g.title + '</div><div style="height:230px"></div>'; grid.appendChild(cell); ChartKit.penaltyRewardMap(cell.lastChild, { ...g.opts, highlight: 'Pool or gym' }); });
+</script>
+</body></html>
